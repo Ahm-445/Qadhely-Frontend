@@ -37,7 +37,13 @@
       "expo-font",
       "expo-image",
       "expo-status-bar",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow Qadhely to find family members who use the app."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
