@@ -3,8 +3,6 @@ import { createContext, ReactNode, useContext, useEffect, useState } from 'react
 import { API_BASE_URL } from "../config/api";
 
 
-const API_URL = "http://localhost:3000/login"
-const API_METHOD = 'POST'
 
 interface AuthContextType {
 	user:					({phoneNumber: string, handleName: string, jwt: string} | null)
@@ -45,7 +43,7 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 			const response = await fetch(`${API_BASE_URL}/api/auth/loginSendOTP`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(phoneNumber),
+				body: JSON.stringify({phoneNumber:phoneNumber}),
 			});
 
 			if (!response.ok) {
@@ -66,18 +64,19 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 			else {
 				// Handle cases where something else was thrown (e.g., a string or undefined)
 				console.error("An unexpected error occurred:", String(error));
+				return { success: false,  error: String(error) };
 			}
     	}
-
+		
 	}
 	
 
 	const checkPhoneRegister = async (phoneNumber: string) => {
 		try {
-			const response = await fetch(`${API_BASE_URL}/registerOTP`, {
+			const response = await fetch(`${API_BASE_URL}/api/auth/registerSendOTP`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(phoneNumber),
+				body: JSON.stringify({phoneNumber: phoneNumber}),
 			});
 
 			if (!response.ok) {
@@ -98,6 +97,7 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 			else {
 				// Handle cases where something else was thrown (e.g., a string or undefined)
 				console.error("An unexpected error occurred:", String(error));
+				return { success: false,  error: String(error) };
 			}
     	}
 	}
@@ -105,10 +105,10 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 
   	const login = async (phoneNumber: string, otp: string) => {
 		try {
-			const response = await fetch(`${API_BASE_URL}/login`, {
+			const response = await fetch(`${API_BASE_URL}/api/auth/loginRecieveOTP`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({phoneNumber, otp}),
+				body: JSON.stringify({phoneNumber: phoneNumber, otp: otp}),
 			});
 
 			if (!response.ok) {
@@ -130,13 +130,14 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 			else {
 				// Handle cases where something else was thrown (e.g., a string or undefined)
 				console.error("An unexpected error occurred:", String(error));
+				return { success: false,  error: String(error) };
 			}
     	}
   	};
 
   	const register = async (phoneNumber: string, otp: string) => {
     	try {
-     		const response = await fetch(`${API_BASE_URL}/register`, {
+     		const response = await fetch(`${API_BASE_URL}/api/auth/registerRecieveOTP`, {
         	method: 'POST',
         	headers: { 'Content-Type': 'application/json' },
         	body: JSON.stringify({phoneNumber, otp}),
@@ -158,13 +159,14 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 			else {
 				// Handle cases where something else was thrown (e.g., a string or undefined)
 				console.error("An unexpected error occurred:", String(error));
+				return { success: false,  error: String(error) };
 			}
     	}
   	};
 
-  	const logout = () => {
+  	const logout = async () => {
     	setUser(null);
-    	localStorage.removeItem('user');
+    	await AsyncStorage.removeItem("user");
   	};
 
   	const isAuthenticated = (user !== null);
@@ -175,6 +177,7 @@ export function AuthProvider({ children }: {children: ReactNode}) {
     	</AuthContext.Provider>
   );
 }
+
 
 export function useAuth() {
 	const context = useContext(AuthContext);

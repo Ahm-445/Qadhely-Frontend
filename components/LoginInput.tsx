@@ -10,7 +10,7 @@ import { SAUDI_PHONE_REGEX } from "../utils/constants";
 
 interface LoginInputProps {
 	setFinalPhone: (phone: string) => void
-	sendOtp: () => void
+	sendOtp: (phone: string) => void
 }
 
 
@@ -54,7 +54,7 @@ const LoginInput: React.FC<LoginInputProps> = ({setFinalPhone, sendOtp}) =>  {
 		if (!errs.invalidPhone && phoneNumber.trim()) {
 
 			setFinalPhone(phoneNumber);
-			sendOtp();
+			sendOtp(phoneNumber);
 
 			setPhoneNumber("");
 		}

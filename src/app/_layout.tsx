@@ -1,25 +1,32 @@
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AuthProvider } from "../../hooks/useAuth";
 import { ThemeProvider } from "../../hooks/useTheme";
 
 export default function RootLayout() {
 
   	return (
 
-		<ThemeProvider>
+		<AuthProvider>
+		
+			<ThemeProvider>
 
-			<SafeAreaProvider>
+				<SafeAreaProvider>
 
-				<Stack screenOptions={{headerShown: false}}>
+					<Stack screenOptions={{headerShown: false}}>
 
-					<Stack.Screen name="Login" />
-					<Stack.Screen name="Register" />
+						<Stack.Screen name="Login" />
+						<Stack.Screen name="Register" />
+						<Stack.Screen name="Home" />
+						<Stack.Screen name="CreateGroup" />
 
-				</Stack>
+					</Stack>
 
-			</SafeAreaProvider>
-			
-		</ThemeProvider>
+				</SafeAreaProvider>
+				
+			</ThemeProvider>
+
+		</AuthProvider>
   		
 	);
 }
