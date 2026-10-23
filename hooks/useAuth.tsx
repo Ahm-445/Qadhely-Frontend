@@ -11,8 +11,8 @@ interface AuthContextType {
 	isAuthenticated: 		boolean
 	checkPhoneLogin: 		(phoneNumber: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
 	checkPhoneRegister: 	(phoneNumber: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
-	login: 					(otp: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
-	register: 				(otp: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
+	login: 					(phoneNumber: string, otp: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
+	register: 				(phoneNumber: string, otp: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
 	logout:					() => void
 }
 
@@ -37,11 +37,12 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 
 	}, []);
 
-
+	
+	// check if phone is valid and send otp if it is valid
 	const checkPhoneLogin = async (phoneNumber: string) => {
 
 		try {
-			const response = await fetch(`${API_BASE_URL}/loginOTP`, {
+			const response = await fetch(`${API_BASE_URL}/api/auth/loginSendOTP`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(phoneNumber),
@@ -102,12 +103,12 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 	}
 
 
-  	const login = async (otp: string) => {
+  	const login = async (phoneNumber: string, otp: string) => {
 		try {
 			const response = await fetch(`${API_BASE_URL}/login`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(otp),
+				body: JSON.stringify({phoneNumber, otp}),
 			});
 
 			if (!response.ok) {
@@ -133,12 +134,12 @@ export function AuthProvider({ children }: {children: ReactNode}) {
     	}
   	};
 
-  	const register = async (otp: string) => {
+  	const register = async (phoneNumber: string, otp: string) => {
     	try {
      		const response = await fetch(`${API_BASE_URL}/register`, {
         	method: 'POST',
         	headers: { 'Content-Type': 'application/json' },
-        	body: JSON.stringify(otp),
+        	body: JSON.stringify({phoneNumber, otp}),
       	});
 
       	if (!response.ok) {
