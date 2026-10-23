@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { createAuthStyles } from "@/assets/styles/auth.styles";
 import Ionicons from "@react-native-vector-icons/ionicons";
 import { LinearGradient } from "expo-linear-gradient";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 import { useTheme } from "../hooks/useTheme";
 import { SAUDI_PHONE_REGEX } from "../utils/constants";
@@ -11,7 +11,8 @@ import { SAUDI_PHONE_REGEX } from "../utils/constants";
 interface RegisterInputProps {
 	setFinalName: (name: string) => void
 	setFinalPhone: (phone: string) => void
-	sendOtp: () => void
+	/** Resolves to a server error message to display, or null when the code was sent. */
+	sendOtp: (name: string, phone: string) => Promise<string | null>
 }
 
 const NAME_MIN_LENGTH = 2;
@@ -29,14 +30,17 @@ const RegisterInput: React.FC<RegisterInputProps> = ({setFinalName, setFinalPhon
 	const [name, setName] = useState("");
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const [errors, setErrors] = useState(DEFAULT_ERRORS);
+	const [submitting, setSubmitting] = useState(false);
+	const [serverError, setServerError] = useState<string | null>(null);
 
 	const phoneInputRef = useRef<TextInput>(null);
 
-	const canSubmit = name.trim() !== "" && phoneNumber.trim() !== "";
+	const canSubmit = name.trim() !== "" && phoneNumber.trim() !== "" && !submitting;
 
 
 	const handleNameChange = (value: string) => {
 		setName(value);
+		if (serverError) setServerError(null);
 		if (errors.invalidName) setErrors({...errors, invalidName: false});
 	}
 
@@ -44,6 +48,7 @@ const RegisterInput: React.FC<RegisterInputProps> = ({setFinalName, setFinalPhon
 	const handleNumberChange = (num: string) => {
 		// Remove any character that is not a digit (0-9)
 		setPhoneNumber(num.replace(/[^0-9]/g, ''));
+		if (serverError) setServerError(null);
 		if (errors.invalidPhone) setErrors({...errors, invalidPhone: false});
 	}
 
@@ -61,7 +66,9 @@ const RegisterInput: React.FC<RegisterInputProps> = ({setFinalName, setFinalPhon
 	}
 
 
-	const handleRegister = () => {
+	const handleRegister = async () => {
+
+		if (submitting) return;
 
 		const errs = validateInputs();
 
@@ -69,9 +76,20 @@ const RegisterInput: React.FC<RegisterInputProps> = ({setFinalName, setFinalPhon
 
 		if (!errs.invalidName && !errs.invalidPhone) {
 
-			setFinalName(name.trim().replace(/\s+/g, " "));
+			const finalName = name.trim().replace(/\s+/g, " ");
+
+			setFinalName(finalName);
 			setFinalPhone(phoneNumber);
-			sendOtp();
+
+			setServerError(null);
+			setSubmitting(true);
+
+			try {
+				setServerError(await sendOtp(finalName, phoneNumber));
+			}
+			finally {
+				setSubmitting(false);
+			}
 		}
 
 	}
@@ -124,8 +142,11 @@ const RegisterInput: React.FC<RegisterInputProps> = ({setFinalName, setFinalPhon
 						style={[authStyles.loginButton, !canSubmit && authStyles.loginButtonDisabled]}
 					>
 
-						<Ionicons name="person-add-outline" size={24} color="#ffffff" />
-						<Text style={{color:"#ffffff"}}>Register</Text>
+						{submitting
+							? <ActivityIndicator color="#ffffff" />
+							: <Ionicons name="person-add-outline" size={24} color="#ffffff" />
+						}
+						<Text style={{color:"#ffffff"}}>{submitting ? "Sending..." : "Register"}</Text>
 
 					</LinearGradient>
 				</TouchableOpacity>
@@ -143,6 +164,12 @@ const RegisterInput: React.FC<RegisterInputProps> = ({setFinalName, setFinalPhon
 							Use {NAME_MIN_LENGTH}-{NAME_MAX_LENGTH} characters: letters, digits, spaces, and . - &apos; _
 						</Text>
 					</View>
+				}
+
+				{serverError &&
+					<Text style={authStyles.invalidInputText}>
+						{serverError}
+					</Text>
 				}
 
 				{errors.invalidPhone &&

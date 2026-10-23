@@ -1,4 +1,5 @@
 import { createAuthStyles } from "@/assets/styles/auth.styles";
+import { router } from "expo-router";
 import { StatusBar } from "react-native";
 import { useTheme } from "../../hooks/useTheme";
 
@@ -11,6 +12,8 @@ import OtpScreen from "../../components/OTPScreen";
 import RegisterHeader from "../../components/RegisterHeader";
 import RegisterInput from "../../components/RegisterInput";
 
+import { requestRegistrationOtp, saveSession, verifyRegistrationOtp } from "../../services/registrationApi";
+
 import { useState } from "react";
 
 
@@ -21,17 +24,40 @@ function Register() {
 	const loginStyles = createAuthStyles(colors);
 
 	const [isOtpSent, setIsOtpSent] = useState(false);
-	const [, setName] = useState(""); // kept for the registration request once the API exists
+	const [name, setName] = useState("");
 	const [phoneNumber, setPhoneNumber] = useState("");
 
-	const handleSendOtp = () => {
-		// UI only: OTP sending is not wired to a backend yet
-		setIsOtpSent(true);
+	// Sends the OTP and opens the modal only if the backend confirms it was sent.
+	// Resolves to an error message to show in the form, or null on success.
+	const handleSendOtp = async (finalName: string, finalPhone: string) => {
+		try {
+			await requestRegistrationOtp(finalName, finalPhone);
+			setIsOtpSent(true);
+			return null;
+		}
+		catch (e) {
+			return e instanceof Error ? e.message : "Something went wrong. Please try again.";
+		}
 	};
 
-	const handleVerifyOtp = async () => {
-		// Never report success until registration is connected to the backend
-		throw new Error("Registration is not available yet.");
+	// The backend has no separate resend route: sending again re-calls register.
+	// A thrown error is shown by the OTP modal.
+	const handleResendOtp = async () => {
+		await requestRegistrationOtp(name, phoneNumber);
+	};
+
+	// A thrown error is shown by the OTP modal (wrong code, expired, too many attempts...).
+	const handleVerifyOtp = async (otp: string) => {
+
+		const session = await verifyRegistrationOtp(phoneNumber, otp);
+
+		await saveSession(session);
+
+		setIsOtpSent(false);
+
+		// TEMPORARY: the Home screen (US 07) does not exist yet, so this goes to the
+		// placeholder index route. Point it at the real home page once it is built.
+		router.replace("/");
 	};
 
 	return (
@@ -60,7 +86,7 @@ function Register() {
 					visible={isOtpSent}
 					destination={phoneNumber}
 					onClose={() => setIsOtpSent(false)}
-					onResend={() => {}} // enabled only after 60s
+					onResend={handleResendOtp} // enabled only after 60s
 					onVerify={handleVerifyOtp}
 				/>
 
