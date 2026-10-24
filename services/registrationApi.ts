@@ -1,15 +1,9 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import { API_BASE_URL } from "../config/api";
 
 
 const REQUEST_TIMEOUT_MS = 15000;
 
-// same key useAuth reads on startup
-const SESSION_STORAGE_KEY = "user";
-
-
-/** Response of POST /api/auth/verify-otp (201), stored as returned by the backend. */
+/** Response of POST /api/auth/verify-otp (201). useAuth stores it as returned by the backend. */
 export interface RegistrationSession {
 	message: string;
 	token: string;
@@ -122,13 +116,3 @@ export async function verifyRegistrationOtp(phoneNumber: string, otp: string): P
 	return data as RegistrationSession;
 }
 
-
-/** Stores the backend session where useAuth looks for it. */
-export async function saveSession(session: RegistrationSession): Promise<void> {
-	try {
-		await AsyncStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
-	}
-	catch {
-		throw new ApiError("Your account was created, but we could not save your session. Please log in.");
-	}
-}

@@ -55,6 +55,8 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
 }) => {
 	const [code, setCode] = useState('');
 	const [error, setError] = useState<string | null>(null);
+	// true when the current error came from a failed verification (not a resend)
+	const [verifyFailed, setVerifyFailed] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [resending, setResending] = useState(false);
 	const [timer, setTimer] = useState(resendSeconds);
@@ -100,6 +102,7 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
 				await onVerify(value);
 			} catch (e: any) {
 				setError(e?.message || 'Invalid code. Please try again.');
+				setVerifyFailed(true);
 				setCode('');
 				otpRef.current?.clear();
 				runShake();
@@ -124,6 +127,7 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
 			otpRef.current?.focus();
 		} catch (e: any) {
 			setError(e?.message || 'Could not resend code.');
+			setVerifyFailed(false);
 		} finally {
 			setResending(false);
 		}
@@ -169,6 +173,17 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
 						{destination ? <Text style={styles.bold}>{destination}</Text> : null}
 					</Text>
 
+					{/* OTP expiry notice. The code and the resend countdown both last resendSeconds. */}
+					{timer > 0 ? (
+						<Text style={styles.expiryNote}>
+							This code is valid for {resendSeconds} seconds and will be invalidated after that.
+						</Text>
+					) : (
+						<Text style={[styles.expiryNote, styles.expiryExpired]}>
+							This code has expired. Tap "Resend code" to get a new one.
+						</Text>
+					)}
+
 					{/* OTP input */}
 					<Animated.View style={{ transform: [{ translateX: shake }] }}>
 						<OtpInput
@@ -203,6 +218,11 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
 					</Animated.View>
 
 					{error ? <Text style={styles.error}>{error}</Text> : null}
+					{error && verifyFailed ? (
+						<Text style={styles.errorHint}>
+							Please check that the code you entered matches the one sent to your phone.
+						</Text>
+					) : null}
 
 					{/* Verify */}
 					<Pressable
@@ -285,9 +305,11 @@ const styles = StyleSheet.create({
 		fontSize: 15,
 		color: '#6B7280',
 		marginTop: 6,
-		marginBottom: 24,
+		marginBottom: 8,
 		lineHeight: 21,
 	},
+	expiryNote: { fontSize: 13, color: '#6B7280', marginBottom: 24, lineHeight: 18 },
+	expiryExpired: { color: ERROR, fontWeight: '600' },
 	bold: { fontWeight: '600', color: '#111827' },
 	otpContainer: { justifyContent: 'space-between' },
 	cell: {
@@ -304,6 +326,7 @@ const styles = StyleSheet.create({
 	cellText: { fontSize: 24, fontWeight: '600', color: '#111827' },
 	caret: { width: 2, height: 24, backgroundColor: PRIMARY },
 	error: { color: ERROR, fontSize: 14, marginTop: 12, textAlign: 'center' },
+	errorHint: { color: '#6B7280', fontSize: 13, marginTop: 4, textAlign: 'center', lineHeight: 18 },
 	button: {
 		marginTop: 28,
 		height: 52,

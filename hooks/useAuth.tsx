@@ -1,18 +1,17 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { API_BASE_URL } from "../config/api";
+import { requestRegistrationOtp, verifyRegistrationOtp } from "../services/registrationApi";
 
 
-const API_URL = "http://localhost:3000/login"
-const API_METHOD = 'POST'
 
 interface AuthContextType {
 	user:					({phoneNumber: string, handleName: string, jwt: string} | null)
 	isAuthenticated: 		boolean
 	checkPhoneLogin: 		(phoneNumber: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
-	checkPhoneRegister: 	(phoneNumber: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
-	login: 					(otp: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
-	register: 				(otp: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
+	checkPhoneRegister: 	(handleName: string, phoneNumber: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
+	login: 					(phoneNumber: string, otp: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
+	register: 				(phoneNumber: string, otp: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
 	logout:					() => void
 }
 
@@ -37,14 +36,15 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 
 	}, []);
 
-
+	
+	// check if phone is valid and send otp if it is valid
 	const checkPhoneLogin = async (phoneNumber: string) => {
 
 		try {
-			const response = await fetch(`${API_BASE_URL}/loginOTP`, {
+			const response = await fetch(`${API_BASE_URL}/api/auth/loginSendOTP`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(phoneNumber),
+				body: JSON.stringify({phoneNumber:phoneNumber}),
 			});
 
 			if (!response.ok) {
@@ -65,49 +65,35 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 			else {
 				// Handle cases where something else was thrown (e.g., a string or undefined)
 				console.error("An unexpected error occurred:", String(error));
+				return { success: false,  error: String(error) };
 			}
     	}
-
+		
 	}
 	
 
-	const checkPhoneRegister = async (phoneNumber: string) => {
+	// send the registration OTP (POST /api/auth/register); fails if the phone is already registered
+	const checkPhoneRegister = async (handleName: string, phoneNumber: string) => {
 		try {
-			const response = await fetch(`${API_BASE_URL}/registerOTP`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(phoneNumber),
-			});
-
-			if (!response.ok) {
-				const err = await response.json();
-				throw new Error(err.error || `HTTP ${response.status}`);
-			}
-
-
+			await requestRegistrationOtp(handleName, phoneNumber);
 
 			return { success: true };
-    	} 
+		}
 		catch (error) {
-			if (error instanceof Error) {
-    
-    			console.error(error.message); 
-      			return { success: false, error: error.message };
-			}
-			else {
-				// Handle cases where something else was thrown (e.g., a string or undefined)
-				console.error("An unexpected error occurred:", String(error));
-			}
-    	}
+			const message = error instanceof Error ? error.message : String(error);
+
+			console.error(message);
+			return { success: false, error: message };
+		}
 	}
 
 
-  	const login = async (otp: string) => {
+  	const login = async (phoneNumber: string, otp: string) => {
 		try {
-			const response = await fetch(`${API_BASE_URL}/login`, {
+			const response = await fetch(`${API_BASE_URL}/api/auth/loginRecieveOTP`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(otp),
+				body: JSON.stringify({phoneNumber: phoneNumber, otp: otp}),
 			});
 
 			if (!response.ok) {
@@ -129,41 +115,39 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 			else {
 				// Handle cases where something else was thrown (e.g., a string or undefined)
 				console.error("An unexpected error occurred:", String(error));
+				return { success: false,  error: String(error) };
 			}
     	}
   	};
 
-  	const register = async (otp: string) => {
-    	try {
-     		const response = await fetch(`${API_BASE_URL}/register`, {
-        	method: 'POST',
-        	headers: { 'Content-Type': 'application/json' },
-        	body: JSON.stringify(otp),
-      	});
+  	// verify the OTP (POST /api/auth/verify-otp); the backend creates the account and returns
+	// the same session shape as login, which is stored the same way
+  	const register = async (phoneNumber: string, otp: string) => {
+		try {
+			const data = await verifyRegistrationOtp(phoneNumber, otp);
 
-      	if (!response.ok) {
-        	const err = await response.json();
-        	throw new Error(err.error || `HTTP ${response.status}`);
-      	}
+			setUser(data as any);
 
-      	return { success: true };
-    	} 
+			try {
+				await AsyncStorage.setItem("user", JSON.stringify(data));
+			}
+			catch {
+				return { success: false, error: "Your account was created, but we could not save your session. Please log in." };
+			}
+
+			return { success: true };
+    	}
 		catch (error) {
-    	  	if (error instanceof Error) {
-    
-    			console.error(error.message); 
-      			return { success: false, error: error.message };
-			}
-			else {
-				// Handle cases where something else was thrown (e.g., a string or undefined)
-				console.error("An unexpected error occurred:", String(error));
-			}
+			const message = error instanceof Error ? error.message : String(error);
+
+			console.error(message);
+			return { success: false, error: message };
     	}
   	};
 
-  	const logout = () => {
+  	const logout = async () => {
     	setUser(null);
-    	localStorage.removeItem('user');
+    	await AsyncStorage.removeItem("user");
   	};
 
   	const isAuthenticated = (user !== null);
@@ -174,6 +158,7 @@ export function AuthProvider({ children }: {children: ReactNode}) {
     	</AuthContext.Provider>
   );
 }
+
 
 export function useAuth() {
 	const context = useContext(AuthContext);

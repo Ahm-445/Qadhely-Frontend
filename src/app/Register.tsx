@@ -1,6 +1,7 @@
 import { createAuthStyles } from "@/assets/styles/auth.styles";
 import { router } from "expo-router";
 import { StatusBar } from "react-native";
+import { useAuth } from "../../hooks/useAuth";
 import { useTheme } from "../../hooks/useTheme";
 
 import { LinearGradient } from "expo-linear-gradient";
@@ -12,14 +13,13 @@ import OtpScreen from "../../components/OTPScreen";
 import RegisterHeader from "../../components/RegisterHeader";
 import RegisterInput from "../../components/RegisterInput";
 
-import { requestRegistrationOtp, saveSession, verifyRegistrationOtp } from "../../services/registrationApi";
-
 import { useState } from "react";
 
 
 function Register() {
 	
 	const {colors} = useTheme();
+	const {checkPhoneRegister, register} = useAuth();
 
 	const loginStyles = createAuthStyles(colors);
 
@@ -30,34 +30,39 @@ function Register() {
 	// Sends the OTP and opens the modal only if the backend confirms it was sent.
 	// Resolves to an error message to show in the form, or null on success.
 	const handleSendOtp = async (finalName: string, finalPhone: string) => {
-		try {
-			await requestRegistrationOtp(finalName, finalPhone);
-			setIsOtpSent(true);
-			return null;
+
+		const result = await checkPhoneRegister(finalName, finalPhone);
+
+		if (!result?.success) {
+			return result?.error ?? "Could not send the verification code.";
 		}
-		catch (e) {
-			return e instanceof Error ? e.message : "Something went wrong. Please try again.";
-		}
+
+		setIsOtpSent(true);
+		return null;
 	};
 
 	// The backend has no separate resend route: sending again re-calls register.
 	// A thrown error is shown by the OTP modal.
 	const handleResendOtp = async () => {
-		await requestRegistrationOtp(name, phoneNumber);
+
+		const result = await checkPhoneRegister(name, phoneNumber);
+
+		if (!result?.success) {
+			throw new Error(result?.error ?? "Could not resend the code.");
+		}
 	};
 
 	// A thrown error is shown by the OTP modal (wrong code, expired, too many attempts...).
 	const handleVerifyOtp = async (otp: string) => {
 
-		const session = await verifyRegistrationOtp(phoneNumber, otp);
+		const result = await register(phoneNumber, otp);
 
-		await saveSession(session);
+		if (!result?.success) {
+			throw new Error(result?.error ?? "Invalid code. Please try again.");
+		}
 
 		setIsOtpSent(false);
-
-		// TEMPORARY: the Home screen (US 07) does not exist yet, so this goes to the
-		// placeholder index route. Point it at the real home page once it is built.
-		router.replace("/");
+		router.replace("/Home");
 	};
 
 	return (
