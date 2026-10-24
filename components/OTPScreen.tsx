@@ -31,8 +31,14 @@ export interface OtpScreenProps {
 	onResend?: () => Promise<void> | void;
 	/** Where the code was sent, shown in the subtitle */
 	destination?: string;
-	/** Number of digits (default 6) */
+	/** Number of digits (default 6). With allowedLengths, the number of input cells. */
 	length?: number;
+	/**
+	 * Optional: accepted code lengths, e.g. [4, 6]. When set, Verify is enabled for any of
+	 * these lengths (use it with autoSubmit={false}, since the code can't auto-submit when
+	 * its length isn't known). Default: only `length` digits are accepted.
+	 */
+	allowedLengths?: number[];
 	/** Seconds before another OTP can be requested (default 60) */
 	resendSeconds?: number;
 	/** Submit automatically once all digits are entered (default true) */
@@ -50,6 +56,7 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
 	onResend,
 	destination,
 	length = 6,
+	allowedLengths,
 	resendSeconds = 60,
 	autoSubmit = true,
 }) => {
@@ -93,9 +100,12 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
 		).start();
 	};
 
+	const isAcceptedLength = (n: number) =>
+		allowedLengths ? allowedLengths.includes(n) : n === length;
+
 	const submit = useCallback(
 		async (value: string) => {
-			if (value.length !== length || loading) return;
+			if (!isAcceptedLength(value.length) || loading) return;
 			setLoading(true);
 			setError(null);
 			try {
@@ -112,7 +122,7 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
 			}
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[length, loading, onVerify],
+		[length, allowedLengths, loading, onVerify],
 	);
 
 	const handleResend = async () => {
@@ -168,7 +178,7 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
 
 					<Text style={styles.title}>Verification code</Text>
 					<Text style={styles.subtitle}>
-						Enter the {length}-digit code we sent
+						Enter the {allowedLengths ? allowedLengths.join(' or ') : length}-digit code we sent
 						{destination ? ' to ' : ''}
 						{destination ? <Text style={styles.bold}>{destination}</Text> : null}
 					</Text>
@@ -227,10 +237,10 @@ const OtpScreen: React.FC<OtpScreenProps> = ({
 					{/* Verify */}
 					<Pressable
 						onPress={() => submit(code)}
-						disabled={code.length !== length || loading}
+						disabled={!isAcceptedLength(code.length) || loading}
 						style={({ pressed }) => [
 							styles.button,
-							(code.length !== length || loading) && styles.buttonDisabled,
+							(!isAcceptedLength(code.length) || loading) && styles.buttonDisabled,
 							pressed && styles.buttonPressed,
 						]}
 					>
