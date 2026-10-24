@@ -2,6 +2,7 @@ import { StyleSheet } from "react-native";
 import { ColorScheme } from "../../hooks/useTheme";
 
 // US 05 — Home (groups) and Create Group screens
+// US 07 — Group screen (the group selected on Home)
 
 export const createGroupsStyles = (colors: ColorScheme) => {
 	const styles = StyleSheet.create({
@@ -110,6 +111,12 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			fontWeight: "500",
 			marginTop: 2,
 			color: colors.textMuted,
+		},
+
+		/* ----------------------------- group details ---------------------------- */
+		groupDetails: {
+			paddingHorizontal: 24,
+			paddingTop: 20,
 		},
 
 		/* ----------------------------- create group ----------------------------- */
