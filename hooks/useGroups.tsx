@@ -146,8 +146,24 @@ function useGroups() {
 		}
 	};
 
+	
+	// Generate an invite link for a group
+	const generateGroupInvite = async (groupId: string) => {
+		return request<{ inviteLink: string }>(
+			`/api/groups/${groupId}/invite`,
+			"POST"
+		);
+	};
 
-	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts };
+	// Join a group using an invite token
+	const joinGroupByInvite = async (inviteToken: string) => {
+		return request<{ message: string; group: Group }>(
+			`/api/groups/join/${inviteToken}`,
+			"POST"
+		);
+	};
+
+	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite };
 }
 
 

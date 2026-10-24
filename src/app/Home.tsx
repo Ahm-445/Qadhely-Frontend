@@ -3,14 +3,14 @@ import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, RefreshControl, SectionList, StatusBar, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, RefreshControl, SectionList, Share, StatusBar, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import GroupCard from "../../components/GroupCard";
 import Header from "../../components/Header";
 import useGroups from "../../hooks/useGroups";
 import { useTheme } from "../../hooks/useTheme";
-
+import type { Group } from "../../hooks/useGroups";
 
 // US 05 — Home page: "New list" button (AC-01) and the
 // "Created Groups" / "Shared Groups" categories (AC-03, SF-20).
@@ -21,10 +21,22 @@ function Home() {
 	const { colors } = useTheme();
 	const groupsStyles = createGroupsStyles(colors);
 
-	const { groups, loading, fetchGroups } = useGroups();
+	const { groups, loading, fetchGroups, generateGroupInvite } = useGroups();
 	const [error, setError] = useState("");
 	const [refreshing, setRefreshing] = useState(false);
 
+const handleShareInvite = async (group: Group) => {
+  const result = await generateGroupInvite(group.id);
+
+  if (!result.success) {
+    Alert.alert("Invite failed", result.error);
+    return;
+  }
+
+  await Share.share({
+    message: `Join my Qadhely shopping group "${group.name}": ${result.data.inviteLink}`,
+  });
+};
 
 	const load = useCallback(async () => {
 		const result = await fetchGroups();
@@ -94,7 +106,7 @@ function Home() {
 						renderSectionFooter={({ section }) =>
 							section.data.length === 0 ? <Text style={groupsStyles.sectionEmpty}>{section.empty}</Text> : null
 						}
-						renderItem={({ item }) => <GroupCard group={item} />}
+						renderItem={({ item }) => <GroupCard group={item} onShareInvite={handleShareInvite} />}
 					/>
 				)}
 
