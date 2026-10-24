@@ -55,6 +55,10 @@ function Register() {
 	// A thrown error is shown by the OTP modal (wrong code, expired, too many attempts...).
 	const handleVerifyOtp = async (otp: string) => {
 
+		if (!/^(\d{4}|\d{6})$/.test(otp)) {
+			throw new Error("Enter the 4 or 6-digit code.");
+		}
+
 		const result = await register(phoneNumber, otp);
 
 		if (!result?.success) {
@@ -90,6 +94,9 @@ function Register() {
 				<OtpScreen
 					visible={isOtpSent}
 					destination={phoneNumber}
+					length={6} // input cells; the code may have 4 or 6 digits
+					allowedLengths={[4, 6]}
+					autoSubmit={false} // length is unknown, so the user taps Verify
 					onClose={() => setIsOtpSent(false)}
 					onResend={handleResendOtp} // enabled only after 60s
 					onVerify={handleVerifyOtp}
