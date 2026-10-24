@@ -12,7 +12,7 @@ interface GroupCardProps {
 	onPress?: () => void
 }
 
-const ROLE_LABELS: Record<Group["myRole"], string> = {
+export const ROLE_LABELS:Record<Group["myRole"], string> = {
 	creator: "Group Creator",
 	admin: "Admin",
 	member: "Member",

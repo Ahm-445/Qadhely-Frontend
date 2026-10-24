@@ -14,7 +14,8 @@ import { useTheme } from "../../hooks/useTheme";
 
 // US 05 — Home page: "New list" button (AC-01) and the
 // "Created Groups" / "Shared Groups" categories (AC-03, SF-20).
-// US 07 builds on this screen (opening a group, more details).
+// US 07 — AC-01: every group the user is a member of, split into
+// "Created Groups" (creator) and "Shared Groups" (admin / member); tap one to open it.
 
 function Home() {
 
@@ -94,7 +95,15 @@ function Home() {
 						renderSectionFooter={({ section }) =>
 							section.data.length === 0 ? <Text style={groupsStyles.sectionEmpty}>{section.empty}</Text> : null
 						}
-						renderItem={({ item }) => <GroupCard group={item} />}
+						renderItem={({ item }) => (
+							<GroupCard
+								group={item}
+								onPress={() => router.push({
+									pathname: "/Group",
+									params: { id: item.id, name: item.name, myRole: item.myRole, memberCount: String(item.memberCount) },
+								})}
+							/>
+						)}
 					/>
 				)}
 
