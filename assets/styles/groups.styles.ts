@@ -119,6 +119,86 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			paddingTop: 20,
 		},
 
+		/* ----------------------------- group members (US 30) ----------------------------- */
+		membersButton: {
+			flexDirection: "row",
+			alignItems: "center",
+			alignSelf: "flex-start",
+			gap: 8,
+			marginTop: 4,
+			paddingVertical: 10,
+			paddingHorizontal: 16,
+			borderRadius: 14,
+			borderWidth: 1.5,
+			borderColor: colors.primary,
+		},
+		membersButtonText: {
+			fontSize: 15,
+			fontWeight: "600",
+			color: colors.primary,
+		},
+		memberRow: {
+			flexDirection: "row",
+			alignItems: "center",
+			padding: 14,
+			borderRadius: 16,
+			marginVertical: 5,
+		},
+		memberAvatar: {
+			width: 40,
+			height: 40,
+			borderRadius: 20,
+			justifyContent: "center",
+			alignItems: "center",
+			marginRight: 12,
+		},
+		memberAvatarText: {
+			fontSize: 17,
+			fontWeight: "700",
+			color: "#ffffff",
+		},
+		memberTextContainer: {
+			flex: 1,
+		},
+		memberName: {
+			fontSize: 16,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		memberSub: {
+			fontSize: 13,
+			fontWeight: "500",
+			marginTop: 2,
+			color: colors.textMuted,
+		},
+		roleBadge: {
+			paddingVertical: 4,
+			paddingHorizontal: 10,
+			borderRadius: 10,
+			borderWidth: 1,
+		},
+		roleBadgeText: {
+			fontSize: 12,
+			fontWeight: "700",
+		},
+		centerState: {
+			alignItems: "center",
+			paddingTop: 40,
+			paddingHorizontal: 24,
+			gap: 12,
+		},
+		retryButton: {
+			paddingVertical: 10,
+			paddingHorizontal: 20,
+			borderRadius: 14,
+			backgroundColor: colors.primary,
+		},
+		retryButtonText: {
+			fontSize: 15,
+			fontWeight: "600",
+			color: "#ffffff",
+		},
+
 		/* ----------------------------- create group ----------------------------- */
 		formSection: {
 			paddingHorizontal: 24,
