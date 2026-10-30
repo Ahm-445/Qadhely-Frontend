@@ -249,6 +249,77 @@ export const createHomeStyles = (colors: ColorScheme) => {
 			fontWeight: "500",
 			color: colors.text,
 		},
+		/* ------------------------ home header (greeting + options) ------------------------ */
+		homeHeader: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			paddingHorizontal: 24,
+			paddingVertical: 32,
+			paddingBottom: 20,
+			zIndex: 10,
+		},
+		greetingContainer: {
+			flexShrink: 1,
+		},
+		greetingText: {
+			fontSize: 16,
+			fontWeight: "500",
+			color: colors.textMuted,
+		},
+		handleNameText: {
+			fontSize: 26,
+			fontWeight: "700",
+			letterSpacing: -0.5,
+			marginTop: 2,
+			color: colors.text,
+		},
+		optionsWrapper: {
+			position: "relative",
+			zIndex: 10,
+		},
+		optionsButton: {
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 8,
+			paddingVertical: 8,
+			paddingHorizontal: 12,
+			borderRadius: 14,
+		},
+		optionsButtonText: {
+			fontSize: 16,
+			fontWeight: "600",
+			color: "#ffffff",
+		},
+		optionsDropdown: {
+			position: "absolute",
+			top: 46,
+			right: 0,
+			minWidth: 160,
+			paddingVertical: 6,
+			borderRadius: 14,
+			borderWidth: 1,
+			backgroundColor: colors.surface,
+			borderColor: colors.border,
+			shadowColor: colors.shadow,
+			shadowOffset: { width: 0, height: 4 },
+			shadowOpacity: 0.15,
+			shadowRadius: 10,
+			elevation: 8,
+		},
+		optionRow: {
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 10,
+			paddingVertical: 12,
+			paddingHorizontal: 16,
+		},
+		logoutText: {
+			fontSize: 16,
+			fontWeight: "600",
+			color: colors.danger,
+		},
+
 
 	});
 
