@@ -84,10 +84,14 @@ function HomeOptions({ visible, onClose }: HomeOptionsProps) {
 
 
 	// clear the session, then send the user back to the login screen
-	const handleLogout = () => {
+	const handleLogout = async () => {
 		onClose();
-		logout();
-		router.replace("/Login");
+		try {
+			await logout();
+		}
+		finally {
+			router.replace("/Login");
+		}
 	};
 
 
