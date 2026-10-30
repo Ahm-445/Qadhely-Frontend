@@ -26,6 +26,15 @@ export interface MyGroups {
 	shared: Group[]
 }
 
+// US 30 — one row of GET /api/groups/:groupId/members
+export interface GroupMember {
+	id: string
+	handleName: string
+	role: Group["myRole"]
+	joinedAt: string
+	isMe: boolean
+}
+
 export interface RegisteredContact {
 	id: string
 	handleName: string
@@ -163,7 +172,15 @@ function useGroups() {
 		);
 	};
 
-	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite };
+	// US 30 — GET /api/groups/:groupId/members (creator and admins only; others get 403)
+	const getGroupMembers = useCallback(async (groupId: string) => {
+		return request<{ groupId: string; members: GroupMember[] }>(
+			`/api/groups/${groupId}/members`,
+			"GET"
+		);
+	}, []);
+
+	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers };
 }
 
 
