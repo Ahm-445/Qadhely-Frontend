@@ -4,6 +4,7 @@ import { createAuthStyles } from "@/assets/styles/auth.styles";
 import Ionicons from "@react-native-vector-icons/ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from "react-native";
+import type { TextInputInstance } from "react-native";
 
 import { useTheme } from "../hooks/useTheme";
 import { SAUDI_PHONE_REGEX } from "../utils/constants";
@@ -33,7 +34,7 @@ const RegisterInput: React.FC<RegisterInputProps> = ({setFinalName, setFinalPhon
 	const [submitting, setSubmitting] = useState(false);
 	const [serverError, setServerError] = useState<string | null>(null);
 
-	const phoneInputRef = useRef<TextInput>(null);
+	const phoneInputRef = useRef<TextInputInstance>(null);
 
 	const canSubmit = name.trim() !== "" && phoneNumber.trim() !== "" && !submitting;
 
