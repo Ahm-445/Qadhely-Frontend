@@ -1,13 +1,15 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { API_BASE_URL } from "../config/api";
+import { unregisterFromItemNotifications } from "../services/notifications";
 import { requestRegistrationOtp, verifyRegistrationOtp } from "../services/registrationApi";
 
 
 
 interface AuthContextType {
-	user:					({phoneNumber: string, handleName: string, jwt: string} | null)
+	user:					({phoneNumber: string, handleName: string, jwt?: string, token?: string} | null)
 	isAuthenticated: 		boolean
+	ready:					boolean		// false until the saved session has been read from storage
 	checkPhoneLogin: 		(phoneNumber: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
 	checkPhoneRegister: 	(handleName: string, phoneNumber: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
 	login: 					(phoneNumber: string, otp: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
@@ -22,17 +24,18 @@ const AuthContext = createContext<null | AuthContextType>(null);
 
 export function AuthProvider({ children }: {children: ReactNode}) {
 
-	const [user, setUser] = useState(null);
+	const [user, setUser] = useState<AuthContextType["user"]>(null);
+	const [ready, setReady] = useState(false);
 
 	useEffect(() => {
 
 		AsyncStorage.getItem("user").then((value) => {
-	  	
+
 			if (value) {
 				setUser(JSON.parse(value));
 			}
-		
-		});
+
+		}).finally(() => setReady(true));
 
 	}, []);
 
@@ -146,6 +149,10 @@ export function AuthProvider({ children }: {children: ReactNode}) {
   	};
 
   	const logout = async () => {
+		// stop this device receiving the user's group notifications (needs the session, so first)
+		const authToken = user?.token ?? user?.jwt;
+		if (authToken) await unregisterFromItemNotifications(authToken);
+
     	setUser(null);
     	await AsyncStorage.removeItem("user");
   	};
@@ -153,7 +160,7 @@ export function AuthProvider({ children }: {children: ReactNode}) {
   	const isAuthenticated = (user !== null);
 
   	return (
-    	<AuthContext.Provider value={{ user, checkPhoneLogin, checkPhoneRegister, login, register, logout, isAuthenticated }}>
+    	<AuthContext.Provider value={{ user, checkPhoneLogin, checkPhoneRegister, login, register, logout, isAuthenticated, ready }}>
       	{children}
     	</AuthContext.Provider>
   );

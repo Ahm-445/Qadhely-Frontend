@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from "../../hooks/useAuth";
+import useItemNotifications from "../../hooks/useItemNotifications";
 import { ThemeProvider } from "../../hooks/useTheme";
 
 export default function RootLayout() {
@@ -8,27 +9,40 @@ export default function RootLayout() {
   	return (
 
 		<AuthProvider>
-		
+
 			<ThemeProvider>
 
 				<SafeAreaProvider>
 
-					<Stack screenOptions={{headerShown: false}}>
-
-						<Stack.Screen name="Login" />
-						<Stack.Screen name="Register" />
-						<Stack.Screen name="Home" />
-						<Stack.Screen name="CreateGroup" />
-						<Stack.Screen name="Group" />
-						<Stack.Screen name="GroupMembers" />
-
-					</Stack>
+					<AppStack />
 
 				</SafeAreaProvider>
-				
+
 			</ThemeProvider>
 
 		</AuthProvider>
-  		
+
+	);
+}
+
+
+// inside AuthProvider so the notification hook can read the session
+function AppStack() {
+
+	useItemNotifications();
+
+	return (
+
+		<Stack screenOptions={{headerShown: false}}>
+
+			<Stack.Screen name="Login" />
+			<Stack.Screen name="Register" />
+			<Stack.Screen name="Home" />
+			<Stack.Screen name="CreateGroup" />
+			<Stack.Screen name="Group" />
+			<Stack.Screen name="GroupMembers" />
+
+		</Stack>
+
 	);
 }
