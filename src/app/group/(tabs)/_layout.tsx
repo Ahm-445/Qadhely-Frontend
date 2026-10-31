@@ -36,8 +36,8 @@ function GroupTabsLayout() {
 						backgroundColor: colors.surface,
 						borderTopWidth: 1,
 						borderTopColor: colors.border,
-						height: 60 + insets.bottom,
-						paddingBottom: insets.bottom,
+						height: 65 + insets.bottom,
+						paddingBottom: insets.bottom + 20,
 						paddingTop: 10
 					},
 
