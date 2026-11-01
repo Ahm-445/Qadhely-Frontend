@@ -195,6 +195,15 @@ function useGroups() {
 		);
 	}, []);
 
+	// US 30 — POST /api/groups/:groupId/members (Group Creator and admins only; 409 if already a member)
+	const addGroupMember = useCallback(async (groupId: string, userId: string) => {
+		return request<{ message: string; group: Group }>(
+			`/api/groups/${groupId}/members`,
+			"POST",
+			{ userId }
+		);
+	}, []);
+
 	// US 12 — POST /api/groups/:groupId/items (the Group Creator and admins only; others get 403)
 	const addListItem = useCallback(async (groupId: string, item: { catalogItemId: string; quantity: number; unit: Unit }) => {
 		return request<{ message: string; item: ListItem }>(
@@ -204,7 +213,7 @@ function useGroups() {
 		);
 	}, []);
 
-	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addListItem };
+	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem };
 }
 
 

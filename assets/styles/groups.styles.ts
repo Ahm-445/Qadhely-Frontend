@@ -119,23 +119,91 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			paddingTop: 20,
 		},
 
-		/* ----------------------------- group members (US 30) ----------------------------- */
-		membersButton: {
+		/* ----------------------------- group header (US 30) ----------------------------- */
+		groupHeader: {
+			paddingHorizontal: 24,
+			paddingTop: 12,
+			paddingBottom: 4,
+		},
+		groupHeaderCard: {
 			flexDirection: "row",
 			alignItems: "center",
-			alignSelf: "flex-start",
-			gap: 8,
-			marginTop: 4,
+			borderRadius: 16,
 			paddingVertical: 10,
-			paddingHorizontal: 16,
-			borderRadius: 14,
+			paddingHorizontal: 10,
+			minHeight: 68,
+		},
+		groupHeaderBackButton: {
+			width: 36,
+			height: 36,
+			borderRadius: 10,
+			justifyContent: "center",
+			alignItems: "center",
+			marginRight: 8,
+			backgroundColor: colors.backgrounds.input,
+		},
+		groupHeaderIcon: {
+			width: 44,
+			height: 44,
+			borderRadius: 12,
+			justifyContent: "center",
+			alignItems: "center",
+			marginRight: 12,
+		},
+		groupHeaderText: {
+			flex: 1,
+		},
+		groupHeaderTitle: {
+			fontSize: 22,
+			fontWeight: "700",
+			letterSpacing: -0.5,
+			color: colors.text,
+		},
+		groupHeaderSubtitle: {
+			fontSize: 14,
+			fontWeight: "500",
+			marginTop: 2,
+			color: colors.textMuted,
+		},
+		groupHeaderMembersButton: {
+			width: 40,
+			height: 40,
+			borderRadius: 20,
 			borderWidth: 1.5,
 			borderColor: colors.primary,
+			justifyContent: "center",
+			alignItems: "center",
+			marginLeft: 8,
 		},
-		membersButtonText: {
+
+		/* ----------------------------- group members (US 30) ----------------------------- */
+		addMembersSection: {
+			paddingHorizontal: 24,
+			paddingTop: 16,
+		},
+		addMembersLabel: {
 			fontSize: 15,
 			fontWeight: "600",
-			color: colors.primary,
+			marginBottom: 10,
+			color: colors.textMuted,
+		},
+		addMembersRow: {
+			flexDirection: "row",
+			gap: 10,
+		},
+		addMembersButton: {
+			flex: 1,
+			flexDirection: "row",
+			alignItems: "center",
+			justifyContent: "center",
+			gap: 8,
+			paddingVertical: 11,
+			borderRadius: 14,
+			borderWidth: 1.5,
+		},
+		addMembersButtonText: {
+			fontSize: 14,
+			fontWeight: "600",
 		},
 		memberRow: {
 			flexDirection: "row",
