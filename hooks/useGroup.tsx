@@ -2,8 +2,8 @@ import { Href } from "expo-router";
 import { createContext, ReactNode, useContext } from "react";
 import type { Group } from "./useGroups";
 
-
-// US 07 — the group the user opened on the Home page.
+// This file is used for internal group managment (Which screens are visible to a particular user)
+// US 12 — the group the user opened on the Home page.
 // Home passes its details as route params (no extra request needed); the (tabs) layout
 // reads them once and hands them down, because the three tab screens are siblings of
 // each other and cannot see those params themselves.
@@ -22,10 +22,9 @@ export function isGroupManager(role: Group["myRole"] | undefined): boolean {
 }
 
 
-// The tab a role opens the group on. A regular member has no "Add items" tab, so they land on
-// the list; both paths carry the group in the URL, which is what the tab bar reads back.
+// The tab a group opens on: the center tab, "Group list", for every role. The group travels in
+// the URL, which is what the tab bar reads back.
 export function groupEntryHref(details: GroupDetails): Href {
-	if (isGroupManager(details.myRole)) return { pathname: "/group/items", params: details };
 	return { pathname: "/group/list", params: details };
 }
 

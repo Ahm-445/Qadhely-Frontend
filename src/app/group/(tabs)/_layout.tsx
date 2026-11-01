@@ -6,6 +6,10 @@ import { GroupProvider, isGroupManager, type GroupDetails } from "../../../../ho
 import { useTheme } from "../../../../hooks/useTheme";
 
 
+// No `unstable_settings` anchor here on purpose: an anchor makes the tab navigator handle Back
+// itself (jump to the anchor tab), so Back would never leave the group. The tab a group opens on is
+// chosen by groupEntryHref in hooks/useGroup.tsx, and Back goes Home.
+
 // US 07 — the group screen, one tab per job.
 // US 30 AC-03: "Add items" and "AI suggestions" belong to the Group Creator and admins,
 // so a regular member sees the "Group list" tab alone.
@@ -28,6 +32,8 @@ function GroupTabsLayout() {
 		<GroupProvider details={details}>
 
 			<Tabs
+				// "none" leaves Back unhandled, so it reaches the root stack and pops the group to Home.
+				backBehavior="none"
 				screenOptions={{
 					tabBarActiveTintColor: colors.primary,
 					tabBarInactiveTintColor: colors.textMuted,
