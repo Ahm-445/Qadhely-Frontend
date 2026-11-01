@@ -43,6 +43,13 @@
         {
           "contactsPermission": "Allow Qadhely to find family members who use the app."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#208AEF",
+          "defaultChannel": "default"
+        }
       ]
     ],
     "experiments": {

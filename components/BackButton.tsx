@@ -9,9 +9,11 @@ import { useTheme } from "../hooks/useTheme";
 interface BackButtonProps {
 	/** Where to go when there is no previous route (e.g. screen opened directly) */
 	fallbackHref?: Href
+	/** What Back does, when the screen wants something other than leaving (e.g. closing a form) */
+	onPress?: () => void
 }
 
-function BackButton({fallbackHref}: BackButtonProps) {
+function BackButton({fallbackHref, onPress}: BackButtonProps) {
 
 	const {colors} = useTheme();
 
@@ -24,7 +26,9 @@ function BackButton({fallbackHref}: BackButtonProps) {
 				style={homeStyles.backButton}
 				activeOpacity={0.8} 
 				onPress={() => {
-					if (fallbackHref && !router.canGoBack()) {
+					if (onPress) {
+						onPress();
+					} else if (fallbackHref && !router.canGoBack()) {
 						router.replace(fallbackHref);
 					} else {
 						router.back();

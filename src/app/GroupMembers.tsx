@@ -8,7 +8,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import BackButton from "../../components/BackButton";
 import { ROLE_LABELS } from "../../components/GroupCard";
-import Header from "../../components/Header";
 import useGroups, { GroupMember } from "../../hooks/useGroups";
 import { useTheme } from "../../hooks/useTheme";
 
@@ -108,7 +107,7 @@ function GroupMembers() {
 
 			<SafeAreaView style={groupsStyles.safeArea}>
 
-				<Header />
+				
 
 				<BackButton />
 

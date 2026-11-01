@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Contact, ContactField, requestPermissionsAsync } from "expo-contacts";
 import { useCallback, useState } from "react";
 import { API_BASE_URL } from "../config/api";
+import type { Unit } from "../utils/quantity";
 
 
 // US 05 — Create Shopping List Groups
@@ -40,6 +41,20 @@ export interface RegisteredContact {
 	handleName: string
 	phoneNumber: string
 	contactName?: string	// name saved on this phone
+}
+
+// US 12 — one row of POST /api/groups/:groupId/items
+export interface ListItem {
+	id: string
+	groupId: string
+	catalogItemId: string | null
+	quantity: number
+	unit: Unit
+	addedBy: string
+	customName: string | null
+	customImage: string | null
+	customStore: string | null
+	createdAt: string
 }
 
 type Result<T> = { success: true; data: T } | { success: false; error: string };
@@ -180,7 +195,16 @@ function useGroups() {
 		);
 	}, []);
 
-	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers };
+	// US 12 — POST /api/groups/:groupId/items (the Group Creator and admins only; others get 403)
+	const addListItem = useCallback(async (groupId: string, item: { catalogItemId: string; quantity: number; unit: Unit }) => {
+		return request<{ message: string; item: ListItem }>(
+			`/api/groups/${groupId}/items`,
+			"POST",
+			item
+		);
+	}, []);
+
+	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addListItem };
 }
 
 

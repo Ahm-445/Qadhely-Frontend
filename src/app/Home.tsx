@@ -7,7 +7,8 @@ import { ActivityIndicator, Alert, RefreshControl, SectionList, Share, StatusBar
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import GroupCard from "../../components/GroupCard";
-import Header from "../../components/Header";
+import HomeHeader from "../../components/HomeHeader";
+import { groupEntryHref } from "../../hooks/useGroup";
 import useGroups from "../../hooks/useGroups";
 import { useTheme } from "../../hooks/useTheme";
 import type { Group } from "../../hooks/useGroups";
@@ -68,7 +69,7 @@ const handleShareInvite = async (group: Group) => {
 
 			<SafeAreaView style={groupsStyles.safeArea}>
 
-				<Header />
+				<HomeHeader />
 
 				<View style={groupsStyles.newListSection}>
 					<TouchableOpacity activeOpacity={0.8} onPress={() => router.push("/CreateGroup")}>
@@ -111,10 +112,9 @@ const handleShareInvite = async (group: Group) => {
 							<GroupCard
 								group={item}
 								onShareInvite={handleShareInvite}
-								onPress={() => router.push({
-									pathname: "/Group",
-									params: { id: item.id, name: item.name, myRole: item.myRole, memberCount: String(item.memberCount) },
-								})}
+								onPress={() => router.push(groupEntryHref({
+									id: item.id, name: item.name, myRole: item.myRole, memberCount: String(item.memberCount)
+								}))}
 							/>
 						)}
 					/>

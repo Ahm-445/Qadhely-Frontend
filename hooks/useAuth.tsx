@@ -1,18 +1,30 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { API_BASE_URL } from "../config/api";
+import { registerPushToken, unregisterPushToken } from "../services/pushNotifications";
 import { requestRegistrationOtp, verifyRegistrationOtp } from "../services/registrationApi";
 
 
 
+// the session the backend returns on login/registration: the JWT is the `token` field
+// (`jwt` is only kept so sessions saved by older builds still work)
+interface Session {
+	message?:		string
+	id?:			string
+	handleName:		string
+	phoneNumber:	string
+	token:			string
+	jwt?:			string
+}
+
 interface AuthContextType {
-	user:					({phoneNumber: string, handleName: string, jwt: string} | null)
+	user:					(Session | null)
 	isAuthenticated: 		boolean
 	checkPhoneLogin: 		(phoneNumber: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
 	checkPhoneRegister: 	(handleName: string, phoneNumber: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
 	login: 					(phoneNumber: string, otp: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
 	register: 				(phoneNumber: string, otp: string) => Promise<{ success: boolean; error?: undefined; } | { success: boolean; error: string; } | undefined>
-	logout:					() => void
+	logout:					() => Promise<void>
 }
 
 
@@ -22,14 +34,19 @@ const AuthContext = createContext<null | AuthContextType>(null);
 
 export function AuthProvider({ children }: {children: ReactNode}) {
 
-	const [user, setUser] = useState(null);
+	const [user, setUser] = useState<Session | null>(null);
 
 	useEffect(() => {
 
 		AsyncStorage.getItem("user").then((value) => {
 	  	
 			if (value) {
-				setUser(JSON.parse(value));
+				const session = JSON.parse(value);
+				setUser(session);
+
+				// the push token can change between launches, so link this phone again
+				const sessionToken = session?.token ?? session?.jwt;
+				if (sessionToken) void registerPushToken(sessionToken);
 			}
 		
 		});
@@ -104,6 +121,12 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 			const data = await response.json();
 			setUser(data);
 			await AsyncStorage.setItem("user", JSON.stringify(data));
+
+			// best effort: link this phone so it can receive notifications. Not awaited:
+			// a permission prompt or an offline request must not hold up the login.
+			const sessionToken = data?.token ?? data?.jwt;
+			if (sessionToken) void registerPushToken(sessionToken);
+
 			return { success: true };
     	} 
 		catch (error) {
@@ -126,7 +149,7 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 		try {
 			const data = await verifyRegistrationOtp(phoneNumber, otp);
 
-			setUser(data as any);
+			setUser(data);
 
 			try {
 				await AsyncStorage.setItem("user", JSON.stringify(data));
@@ -134,6 +157,10 @@ export function AuthProvider({ children }: {children: ReactNode}) {
 			catch {
 				return { success: false, error: "Your account was created, but we could not save your session. Please log in." };
 			}
+
+			// same as logging in: link this phone so the new account can receive notifications
+			const sessionToken = data.token;
+			if (sessionToken) void registerPushToken(sessionToken);
 
 			return { success: true };
     	}
@@ -145,7 +172,13 @@ export function AuthProvider({ children }: {children: ReactNode}) {
     	}
   	};
 
-  	const logout = async () => {
+ 	const logout = async () => {
+		// unlink this phone from the user first: the request needs the JWT, which is
+		// cleared right after. unregisterPushToken never throws, so logging out while
+		// offline still clears the session locally.
+		const sessionToken = user?.token ?? user?.jwt;
+		if (sessionToken) await unregisterPushToken(sessionToken);
+
     	setUser(null);
     	await AsyncStorage.removeItem("user");
   	};

@@ -19,7 +19,7 @@ export default function RootLayout() {
 						<Stack.Screen name="Register" />
 						<Stack.Screen name="Home" />
 						<Stack.Screen name="CreateGroup" />
-						<Stack.Screen name="Group" />
+						<Stack.Screen name="group/(tabs)" />
 						<Stack.Screen name="GroupMembers" />
 
 					</Stack>
