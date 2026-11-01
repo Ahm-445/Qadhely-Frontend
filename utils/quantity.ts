@@ -7,7 +7,7 @@ export const UNITS = ["piece", "kg", "box"] as const;
 export type Unit = (typeof UNITS)[number];
 
 
-/** What the unit dropdown shows. */
+/** What the unit dropdown shows. */ 
 export const UNIT_LABELS: Record<Unit, string> = {
 	piece: "Piece",
 	kg: "Kg",
