@@ -213,7 +213,16 @@ function useGroups() {
 		);
 	}, []);
 
-	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem };
+	// US 15 — GET /api/groups/:groupId/items
+	// shortcut: the backend's main has no GET for items yet, so this returns 404 until it lands
+	const getItems = useCallback(async (groupId: string) => {
+		return request<{ groupId: string; items: ListItem[] }>(
+			`/api/groups/${groupId}/items`,
+			"GET"
+		);
+	}, []);
+
+	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem, getItems };
 }
 
 

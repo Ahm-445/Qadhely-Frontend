@@ -267,6 +267,141 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			color: "#ffffff",
 		},
 
+		/* ----------------------------- shopping list (US 14, US 15) ----------------------------- */
+		listItemCard: {
+			flexDirection: "row",
+			alignItems: "center",
+			padding: 12,
+			borderRadius: 20,
+			marginVertical: 6,
+			shadowColor: colors.shadow,
+			shadowOffset: { width: 0, height: 4 },
+			shadowOpacity: 0.1,
+			shadowRadius: 8,
+			elevation: 4,
+		},
+		listItemImage: {
+			width: 72,
+			height: 72,
+			borderRadius: 14,
+			marginRight: 12,
+			borderWidth: 1,
+			borderColor: colors.border,
+			backgroundColor: colors.surface,
+			overflow: "hidden",
+		},
+		listItemImageFill: {
+			flex: 1,
+		},
+		listItemInfo: {
+			flex: 1,
+			marginRight: 8,
+		},
+		listItemName: {
+			fontSize: 16,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		listItemMeta: {
+			fontSize: 14,
+			fontWeight: "500",
+			marginTop: 2,
+			color: colors.textMuted,
+		},
+		listItemAdminActions: {
+			flexDirection: "row",
+			gap: 8,
+			marginTop: 8,
+		},
+		listItemAdminButton: {
+			width: 36,
+			height: 36,
+			borderRadius: 18,
+			borderWidth: 1,
+			borderColor: colors.border,
+			justifyContent: "center",
+			alignItems: "center",
+		},
+		listItemStatusActions: {
+			flexDirection: "row",
+			gap: 8,
+		},
+		listItemStatusButton: {
+			width: 44,
+			height: 44,
+			borderRadius: 14,
+			borderWidth: 1.5,
+			borderColor: colors.border,
+			justifyContent: "center",
+			alignItems: "center",
+		},
+		modalBackdrop: {
+			flex: 1,
+			justifyContent: "center",
+			padding: 24,
+			backgroundColor: "rgba(0,0,0,0.5)",
+		},
+		modalCard: {
+			padding: 24,
+			borderRadius: 20,
+			backgroundColor: colors.surface,
+		},
+		unitOptions: {
+			flexDirection: "row",
+			gap: 8,
+			marginBottom: 16,
+		},
+		unitOption: {
+			flex: 1,
+			alignItems: "center",
+			paddingVertical: 12,
+			borderRadius: 14,
+			borderWidth: 1.5,
+			borderColor: colors.border,
+		},
+		unitOptionSelected: {
+			borderColor: colors.primary,
+			backgroundColor: colors.primary,
+		},
+		unitOptionText: {
+			fontSize: 15,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		unitOptionTextSelected: {
+			color: "#ffffff",
+		},
+		modalError: {
+			fontSize: 15,
+			fontWeight: "500",
+			color: colors.danger,
+			marginBottom: 12,
+		},
+		modalActions: {
+			flexDirection: "row",
+			gap: 8,
+		},
+		modalButton: {
+			flex: 1,
+			alignItems: "center",
+			paddingVertical: 14,
+			borderRadius: 14,
+			borderWidth: 1.5,
+			borderColor: colors.border,
+		},
+		modalButtonPrimary: {
+			borderColor: colors.primary,
+			backgroundColor: colors.primary,
+		},
+		modalButtonText: {
+			fontSize: 16,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		modalButtonPrimaryText: {
+			color: "#ffffff",
+		},
+
 		/* ----------------------------- create group ----------------------------- */
 		formSection: {
 			paddingHorizontal: 24,
