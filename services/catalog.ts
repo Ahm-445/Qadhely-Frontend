@@ -8,6 +8,8 @@
 // To switch to the real catalog, replace the body of getCatalogItem with the lookup or the
 // API call — nothing else has to change.
 
+import type { ListItem } from "../hooks/useGroups";
+
 export interface CatalogItem {
 	id: string
 	name_en: string
@@ -63,4 +65,12 @@ export function catalogItemSize(item: CatalogItem): string {
 /** "Al Gharbia Large White Eggs Plastic Packaging 30 pcs" — brand, name and size, as one line. */
 export function catalogItemTitle(item: CatalogItem): string {
 	return [item.brand_en, item.name_en, catalogItemSize(item)].filter(Boolean).join(" ");
+}
+
+
+/** The name a list row shows: the catalog's, the custom request's, or the id while the catalog has no such item. */
+export function listItemName(item: ListItem): string {
+	const catalogItem = item.catalogItemId ? getCatalogItem(item.catalogItemId) : null;
+
+	return catalogItem?.name_en ?? item.customName ?? item.catalogItemId ?? "";
 }
