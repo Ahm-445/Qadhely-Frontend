@@ -19,6 +19,7 @@ import { listItemName } from "../services/catalog";
 // US 07 — the group the user selected on the Home page, as the "Group list" tab.
 // The group's details come from hooks/useGroup (Home passed them as route params).
 // US 15 — the group's items, reloaded each time the tab is shown and on pull-to-refresh.
+// US 13 — the trash button removes the item on the server (DELETE /api/groups/:groupId/items/:itemId).
 
 function GroupList() {
 
@@ -26,7 +27,7 @@ function GroupList() {
 	const groupsStyles = createGroupsStyles(colors);
 
 	const { id, name, myRole, memberCount } = useGroup();
-	const { getItems } = useGroups();
+	const { getItems, removeListItem } = useGroups();
 
 	const [items, setItems] = useState<ListItem[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -67,15 +68,23 @@ function GroupList() {
 	);
 
 
-	// shortcut: only removes the item from this screen, add the DELETE request when the backend has one
+	// US 13 AC-01: the admin removes the item from the list on the server, then from this screen
+	const removeItem = async (item: ListItem) => {
+		const result = await removeListItem(id, item.id);
+
+		if (result.success) {
+			setItems((current) => current.filter((i) => i.id !== item.id));
+		}
+		else {
+			Alert.alert("Could not remove the item", result.error);
+			load();
+		}
+	};
+
 	const confirmRemove = (item: ListItem) => {
 		Alert.alert("Remove item", `Remove ${listItemName(item)} from the list?`, [
 			{ text: "Cancel", style: "cancel" },
-			{
-				text: "Remove",
-				style: "destructive",
-				onPress: () => setItems((current) => current.filter((i) => i.id !== item.id)),
-			},
+			{ text: "Remove", style: "destructive", onPress: () => removeItem(item) },
 		]);
 	};
 
