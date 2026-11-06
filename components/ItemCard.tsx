@@ -6,11 +6,11 @@ import { Text, TouchableOpacity, View } from "react-native";
 
 import type { ListItem } from "../hooks/useGroups";
 import { useTheme } from "../hooks/useTheme";
-import { getCatalogItem, listItemName } from "../services/catalog";
+import { listItemName } from "../services/catalog";
 
 
 // US 15 — one item of the shopping list: name, image, quantity, unit and store (AC-01).
-// The row stores a catalog id, so these details come from the catalog (or the custom request's own fields).
+// The row stores a catalog id; the backend sends that product with it (or the custom request's own fields).
 // The pencil and trash buttons are for the Group Creator and admins only.
 
 export type ItemStatus = "found" | "notFound";
@@ -30,10 +30,9 @@ function ItemCard({ item, status, canManage, onStatusChange, onEdit, onRemove }:
 	const { colors } = useTheme();
 	const groupsStyles = createGroupsStyles(colors);
 
-	const catalogItem = item.catalogItemId ? getCatalogItem(item.catalogItemId) : null;
 	const name = listItemName(item);
-	const image = catalogItem?.image ?? item.customImage;
-	const store = catalogItem?.store ?? item.customStore;
+	const image = item.catalogItem?.image ?? item.customImage;
+	const store = item.catalogItem?.store ?? item.customStore;
 
 
 	return (

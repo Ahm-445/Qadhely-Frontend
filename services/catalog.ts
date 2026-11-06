@@ -162,7 +162,5 @@ export function catalogItemTitle(item: CatalogItem): string {
 
 /** The name a list row shows: the catalog's, the custom request's, or the id while the catalog has no such item. */
 export function listItemName(item: ListItem): string {
-	const catalogItem = item.catalogItemId ? getCatalogItem(item.catalogItemId) : null;
-
-	return catalogItem?.name_en ?? item.customName ?? item.catalogItemId ?? "";
+	return item.catalogItem?.name_en ?? item.customName ?? item.catalogItemId ?? "";
 }

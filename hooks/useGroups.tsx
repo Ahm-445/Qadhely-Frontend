@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Contact, ContactField, requestPermissionsAsync } from "expo-contacts";
 import { useCallback, useState } from "react";
 import { API_BASE_URL } from "../config/api";
+import type { CatalogItem } from "../services/catalog";
 import type { Unit } from "../utils/quantity";
 
 
@@ -54,6 +55,7 @@ export interface ListItem {
 	customName: string | null
 	customImage: string | null
 	customStore: string | null
+	catalogItem: CatalogItem | null	// US 15: the product the backend looked up; null for a custom request
 	createdAt: string
 }
 
