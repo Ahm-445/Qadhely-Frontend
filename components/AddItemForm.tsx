@@ -158,27 +158,33 @@ function AddItemForm({ itemId, onAdded, onCancel }: AddItemFormProps) {
 					<LinearGradient colors={colors.gradients.surface} style={groupsStyles.itemCard}>
 
 						<View style={[groupsStyles.itemImageWrap, { backgroundColor: colors.backgrounds.editInput }]}>
-							<Image
-								source={{ uri: item.image }}
-								style={groupsStyles.itemImage}
-								contentFit="cover"
-								transition={200}
-								accessibilityLabel={catalogItemTitle(item)}
-							/>
+							{item.image ? (
+								<Image
+									source={{ uri: item.image }}
+									style={groupsStyles.itemImage}
+									contentFit="cover"
+									transition={200}
+									accessibilityLabel={catalogItemTitle(item)}
+								/>
+							) : (
+								<Ionicons name="image-outline" size={32} color={colors.textMuted} />
+							)}
 						</View>
 
 						<View style={groupsStyles.itemTextContainer}>
 
-							<Text style={groupsStyles.itemBrand} numberOfLines={1}>{item.brand_en}</Text>
+							{item.brand_en ? <Text style={groupsStyles.itemBrand} numberOfLines={1}>{item.brand_en}</Text> : null}
 
 							<Text style={groupsStyles.itemName} numberOfLines={3}>{item.name_en}</Text>
 
-							<Text style={groupsStyles.itemSize}>{catalogItemSize(item)}</Text>
+							{catalogItemSize(item) !== "" ? <Text style={groupsStyles.itemSize}>{catalogItemSize(item)}</Text> : null}
 
-							<View style={groupsStyles.itemStore}>
-								<Ionicons name="storefront-outline" size={14} color={colors.textMuted} />
-								<Text style={groupsStyles.itemStoreText} numberOfLines={1}>{item.store}</Text>
-							</View>
+							{item.store ? (
+								<View style={groupsStyles.itemStore}>
+									<Ionicons name="storefront-outline" size={14} color={colors.textMuted} />
+									<Text style={groupsStyles.itemStoreText} numberOfLines={1}>{item.store}</Text>
+								</View>
+							) : null}
 
 						</View>
 
