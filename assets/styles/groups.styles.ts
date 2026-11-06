@@ -531,23 +531,55 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			fontWeight: "700",
 			color: colors.primary,
 		},
-		simulateRow: {
+		/* ------------------------ catalog search (Add items tab) ------------------------ */
+		searchSection: {
+			paddingHorizontal: 24,
+			paddingTop: 4,
+		},
+		searchBar: {
 			flexDirection: "row",
 			alignItems: "center",
 			gap: 10,
-			marginTop: 16,
-			paddingVertical: 14,
-			paddingHorizontal: 18,
-			borderRadius: 16,
-			borderWidth: 1.5,
-			borderStyle: "dashed",
+			borderWidth: 2,
+			borderRadius: 20,
+			paddingHorizontal: 16,
+			marginTop: 8,
+			backgroundColor: colors.backgrounds.input,
 			borderColor: colors.border,
 		},
-		simulateText: {
+		searchBarFocused: {
+			borderColor: colors.primary,
+		},
+		searchInput: {
 			flex: 1,
-			fontSize: 14,
+			paddingVertical: 14,
+			fontSize: 17,
 			fontWeight: "500",
-			color: colors.textMuted,
+			color: colors.text,
+		},
+		searchMessage: {
+			paddingHorizontal: 24,
+			paddingTop: 16,
+		},
+		resultsList: {
+			flex: 1,
+			marginTop: 12,
+		},
+		resultsContent: {
+			paddingHorizontal: 24,
+			paddingBottom: 32,
+		},
+		resultSeparator: {
+			height: 12,
+		},
+		resultsFooter: {
+			paddingVertical: 20,
+			alignItems: "center",
+		},
+		resultImageWrap: {
+			width: 68,
+			height: 68,
+			marginRight: 14,
 		},
 	});
 
