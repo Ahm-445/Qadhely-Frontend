@@ -60,7 +60,7 @@ export function catalogItemSize(item: CatalogItem): string {
 }
 
 
-/** "Al Gharbia Large White Eggs Plastic Packaging 30 pcs" — brand, name and size, as one line. */
+/** Ex: "Al Gharbia Large White Eggs Plastic Packaging 30 pcs" — brand, name and size, as one line. */
 export function catalogItemTitle(item: CatalogItem): string {
 	return [item.brand_en, item.name_en, catalogItemSize(item)].filter(Boolean).join(" ");
 }
