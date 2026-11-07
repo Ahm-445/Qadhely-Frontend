@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Contact, ContactField, requestPermissionsAsync } from "expo-contacts";
 import { useCallback, useState } from "react";
 import { API_BASE_URL } from "../config/api";
+import type { CatalogItem } from "../services/catalog";
 import type { Unit } from "../utils/quantity";
 
 
@@ -54,6 +55,7 @@ export interface ListItem {
 	customName: string | null
 	customImage: string | null
 	customStore: string | null
+	catalogItem: CatalogItem | null	// US 15: the product the backend looked up; null for a custom request
 	createdAt: string
 }
 
@@ -72,7 +74,7 @@ async function getToken(): Promise<string | null> {
 }
 
 
-async function request<T>(path: string, method: "GET" | "POST", body?: unknown): Promise<Result<T>> {
+async function request<T>(path: string, method: "GET" | "POST" | "DELETE", body?: unknown): Promise<Result<T>> {
 	try {
 		const token = await getToken();
 
@@ -195,6 +197,15 @@ function useGroups() {
 		);
 	}, []);
 
+	// US 30 — POST /api/groups/:groupId/members (Group Creator and admins only; 409 if already a member)
+	const addGroupMember = useCallback(async (groupId: string, userId: string) => {
+		return request<{ message: string; group: Group }>(
+			`/api/groups/${groupId}/members`,
+			"POST",
+			{ userId }
+		);
+	}, []);
+
 	// US 12 — POST /api/groups/:groupId/items (the Group Creator and admins only; others get 403)
 	const addListItem = useCallback(async (groupId: string, item: { catalogItemId: string; quantity: number; unit: Unit }) => {
 		return request<{ message: string; item: ListItem }>(
@@ -204,7 +215,23 @@ function useGroups() {
 		);
 	}, []);
 
-	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addListItem };
+	// US 15 — GET /api/groups/:groupId/items
+	const getItems = useCallback(async (groupId: string) => {
+		return request<{ groupId: string; items: ListItem[] }>(
+			`/api/groups/${groupId}/items`,
+			"GET"
+		);
+	}, []);
+
+	// US 13 — DELETE /api/groups/:groupId/items/:itemId (the Group Creator and admins only; others get 403)
+	const removeListItem = useCallback(async (groupId: string, itemId: string) => {
+		return request<{ message: string; itemId: string }>(
+			`/api/groups/${groupId}/items/${itemId}`,
+			"DELETE"
+		);
+	}, []);
+
+	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem, getItems, removeListItem };
 }
 
 

@@ -119,23 +119,91 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			paddingTop: 20,
 		},
 
-		/* ----------------------------- group members (US 30) ----------------------------- */
-		membersButton: {
+		/* ----------------------------- group header (US 30) ----------------------------- */
+		groupHeader: {
+			paddingHorizontal: 24,
+			paddingTop: 12,
+			paddingBottom: 4,
+		},
+		groupHeaderCard: {
 			flexDirection: "row",
 			alignItems: "center",
-			alignSelf: "flex-start",
-			gap: 8,
-			marginTop: 4,
+			borderRadius: 16,
 			paddingVertical: 10,
-			paddingHorizontal: 16,
-			borderRadius: 14,
+			paddingHorizontal: 10,
+			minHeight: 68,
+		},
+		groupHeaderBackButton: {
+			width: 36,
+			height: 36,
+			borderRadius: 10,
+			justifyContent: "center",
+			alignItems: "center",
+			marginRight: 8,
+			backgroundColor: colors.backgrounds.input,
+		},
+		groupHeaderIcon: {
+			width: 44,
+			height: 44,
+			borderRadius: 12,
+			justifyContent: "center",
+			alignItems: "center",
+			marginRight: 12,
+		},
+		groupHeaderText: {
+			flex: 1,
+		},
+		groupHeaderTitle: {
+			fontSize: 22,
+			fontWeight: "700",
+			letterSpacing: -0.5,
+			color: colors.text,
+		},
+		groupHeaderSubtitle: {
+			fontSize: 14,
+			fontWeight: "500",
+			marginTop: 2,
+			color: colors.textMuted,
+		},
+		groupHeaderMembersButton: {
+			width: 40,
+			height: 40,
+			borderRadius: 20,
 			borderWidth: 1.5,
 			borderColor: colors.primary,
+			justifyContent: "center",
+			alignItems: "center",
+			marginLeft: 8,
 		},
-		membersButtonText: {
+
+		/* ----------------------------- group members (US 30) ----------------------------- */
+		addMembersSection: {
+			paddingHorizontal: 24,
+			paddingTop: 16,
+		},
+		addMembersLabel: {
 			fontSize: 15,
 			fontWeight: "600",
-			color: colors.primary,
+			marginBottom: 10,
+			color: colors.textMuted,
+		},
+		addMembersRow: {
+			flexDirection: "row",
+			gap: 10,
+		},
+		addMembersButton: {
+			flex: 1,
+			flexDirection: "row",
+			alignItems: "center",
+			justifyContent: "center",
+			gap: 8,
+			paddingVertical: 11,
+			borderRadius: 14,
+			borderWidth: 1.5,
+		},
+		addMembersButtonText: {
+			fontSize: 14,
+			fontWeight: "600",
 		},
 		memberRow: {
 			flexDirection: "row",
@@ -196,6 +264,141 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 		retryButtonText: {
 			fontSize: 15,
 			fontWeight: "600",
+			color: "#ffffff",
+		},
+
+		/* ----------------------------- shopping list (US 14, US 15) ----------------------------- */
+		listItemCard: {
+			flexDirection: "row",
+			alignItems: "center",
+			padding: 12,
+			borderRadius: 20,
+			marginVertical: 6,
+			shadowColor: colors.shadow,
+			shadowOffset: { width: 0, height: 4 },
+			shadowOpacity: 0.1,
+			shadowRadius: 8,
+			elevation: 4,
+		},
+		listItemImage: {
+			width: 72,
+			height: 72,
+			borderRadius: 14,
+			marginRight: 12,
+			borderWidth: 1,
+			borderColor: colors.border,
+			backgroundColor: colors.surface,
+			overflow: "hidden",
+		},
+		listItemImageFill: {
+			flex: 1,
+		},
+		listItemInfo: {
+			flex: 1,
+			marginRight: 8,
+		},
+		listItemName: {
+			fontSize: 16,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		listItemMeta: {
+			fontSize: 14,
+			fontWeight: "500",
+			marginTop: 2,
+			color: colors.textMuted,
+		},
+		listItemAdminActions: {
+			flexDirection: "row",
+			gap: 8,
+			marginTop: 8,
+		},
+		listItemAdminButton: {
+			width: 36,
+			height: 36,
+			borderRadius: 18,
+			borderWidth: 1,
+			borderColor: colors.border,
+			justifyContent: "center",
+			alignItems: "center",
+		},
+		listItemStatusActions: {
+			flexDirection: "row",
+			gap: 8,
+		},
+		listItemStatusButton: {
+			width: 44,
+			height: 44,
+			borderRadius: 14,
+			borderWidth: 1.5,
+			borderColor: colors.border,
+			justifyContent: "center",
+			alignItems: "center",
+		},
+		modalBackdrop: {
+			flex: 1,
+			justifyContent: "center",
+			padding: 24,
+			backgroundColor: "rgba(0,0,0,0.5)",
+		},
+		modalCard: {
+			padding: 24,
+			borderRadius: 20,
+			backgroundColor: colors.surface,
+		},
+		unitOptions: {
+			flexDirection: "row",
+			gap: 8,
+			marginBottom: 16,
+		},
+		unitOption: {
+			flex: 1,
+			alignItems: "center",
+			paddingVertical: 12,
+			borderRadius: 14,
+			borderWidth: 1.5,
+			borderColor: colors.border,
+		},
+		unitOptionSelected: {
+			borderColor: colors.primary,
+			backgroundColor: colors.primary,
+		},
+		unitOptionText: {
+			fontSize: 15,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		unitOptionTextSelected: {
+			color: "#ffffff",
+		},
+		modalError: {
+			fontSize: 15,
+			fontWeight: "500",
+			color: colors.danger,
+			marginBottom: 12,
+		},
+		modalActions: {
+			flexDirection: "row",
+			gap: 8,
+		},
+		modalButton: {
+			flex: 1,
+			alignItems: "center",
+			paddingVertical: 14,
+			borderRadius: 14,
+			borderWidth: 1.5,
+			borderColor: colors.border,
+		},
+		modalButtonPrimary: {
+			borderColor: colors.primary,
+			backgroundColor: colors.primary,
+		},
+		modalButtonText: {
+			fontSize: 16,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		modalButtonPrimaryText: {
 			color: "#ffffff",
 		},
 
@@ -463,23 +666,55 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			fontWeight: "700",
 			color: colors.primary,
 		},
-		simulateRow: {
+		/* ------------------------ catalog search (Add items tab) ------------------------ */
+		searchSection: {
+			paddingHorizontal: 24,
+			paddingTop: 4,
+		},
+		searchBar: {
 			flexDirection: "row",
 			alignItems: "center",
 			gap: 10,
-			marginTop: 16,
-			paddingVertical: 14,
-			paddingHorizontal: 18,
-			borderRadius: 16,
-			borderWidth: 1.5,
-			borderStyle: "dashed",
+			borderWidth: 2,
+			borderRadius: 20,
+			paddingHorizontal: 16,
+			marginTop: 8,
+			backgroundColor: colors.backgrounds.input,
 			borderColor: colors.border,
 		},
-		simulateText: {
+		searchBarFocused: {
+			borderColor: colors.primary,
+		},
+		searchInput: {
 			flex: 1,
-			fontSize: 14,
+			paddingVertical: 14,
+			fontSize: 17,
 			fontWeight: "500",
-			color: colors.textMuted,
+			color: colors.text,
+		},
+		searchMessage: {
+			paddingHorizontal: 24,
+			paddingTop: 16,
+		},
+		resultsList: {
+			flex: 1,
+			marginTop: 12,
+		},
+		resultsContent: {
+			paddingHorizontal: 24,
+			paddingBottom: 32,
+		},
+		resultSeparator: {
+			height: 12,
+		},
+		resultsFooter: {
+			paddingVertical: 20,
+			alignItems: "center",
+		},
+		resultImageWrap: {
+			width: 68,
+			height: 68,
+			marginRight: 14,
 		},
 	});
 
