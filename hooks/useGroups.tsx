@@ -74,7 +74,7 @@ async function getToken(): Promise<string | null> {
 }
 
 
-async function request<T>(path: string, method: "GET" | "POST" | "DELETE", body?: unknown): Promise<Result<T>> {
+async function request<T>(path: string, method: "GET" | "POST" | "PATCH" | "DELETE", body?: unknown): Promise<Result<T>> {
 	try {
 		const token = await getToken();
 
@@ -231,7 +231,16 @@ function useGroups() {
 		);
 	}, []);
 
-	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem, getItems, removeListItem };
+	// US 14 — PATCH /api/groups/:groupId/items/:itemId (the Group Creator and admins only; others get 403)
+	const updateListItem = useCallback(async (groupId: string, itemId: string, change: { quantity: number; unit: Unit }) => {
+		return request<{ message: string; item: ListItem }>(
+			`/api/groups/${groupId}/items/${itemId}`,
+			"PATCH",
+			change
+		);
+	}, []);
+
+	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem, getItems, removeListItem, updateListItem };
 }
 
 
