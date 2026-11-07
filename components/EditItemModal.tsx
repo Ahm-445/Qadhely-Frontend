@@ -2,16 +2,16 @@ import { createGroupsStyles } from "@/assets/styles/groups.styles";
 import { useState } from "react";
 import { KeyboardAvoidingView, Modal, Platform, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-import type { ListItem } from "../hooks/useGroups";
+import useGroups, { type ListItem } from "../hooks/useGroups";
 import { useTheme } from "../hooks/useTheme";
 import { listItemName } from "../services/catalog";
 import { UNITS, UNIT_LABELS, allowsDecimal, sanitizeQuantityInput, validateQuantity, type Unit } from "../utils/quantity";
 
 
 // US 14 — Modify Item Quantity and Unit
-// AC-01: asks for the new quantity and unit. AC-03: Cancel changes nothing.
-// AC-04: an invalid quantity shows a message and lets the admin fix it or cancel.
-// shortcut: Save only changes the list on this screen, add the PATCH request for AC-02 when the backend has one
+// AC-01: asks for the new quantity and unit. AC-02: Save stores them on the server (PATCH).
+// AC-03: Cancel changes nothing.
+// AC-04: an invalid quantity, here or from the server, shows a message and lets the admin fix it or cancel.
 
 // an Arabic keyboard can type ٣ or ٫, which sanitizeQuantityInput would drop
 function toLatinDigits(text: string): string {
@@ -34,9 +34,12 @@ function EditItemModal({ item, onClose, onSaved }: EditItemModalProps) {
 	const [quantity, setQuantity] = useState(String(item.quantity));
 	const [unit, setUnit] = useState<Unit>(item.unit);
 	const [error, setError] = useState("");
+	const [saving, setSaving] = useState(false);
+
+	const { updateListItem } = useGroups();
 
 
-	const save = () => {
+	const save = async () => {
 		const message = validateQuantity(quantity, unit);
 
 		if (message) {
@@ -44,7 +47,16 @@ function EditItemModal({ item, onClose, onSaved }: EditItemModalProps) {
 			return;
 		}
 
-		onSaved({ ...item, quantity: Number(quantity), unit });
+		setSaving(true);
+		const result = await updateListItem(item.groupId, item.id, { quantity: Number(quantity), unit });
+		setSaving(false);
+
+		if (!result.success) {
+			setError(result.error);
+			return;
+		}
+
+		onSaved(result.data.item);
 	};
 
 
@@ -95,10 +107,12 @@ function EditItemModal({ item, onClose, onSaved }: EditItemModalProps) {
 						</TouchableOpacity>
 
 						<TouchableOpacity
-							style={[groupsStyles.modalButton, groupsStyles.modalButtonPrimary]}
+							style={[groupsStyles.modalButton, groupsStyles.modalButtonPrimary, saving && groupsStyles.createButtonDisabled]}
 							activeOpacity={0.8}
 							onPress={save}
+							disabled={saving}
 							accessibilityRole="button"
+							accessibilityState={{ disabled: saving }}
 						>
 							<Text style={[groupsStyles.modalButtonText, groupsStyles.modalButtonPrimaryText]}>Save</Text>
 						</TouchableOpacity>
