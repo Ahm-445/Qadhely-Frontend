@@ -107,7 +107,7 @@ function DeleteAccountFlow({ visible, onClose }: DeleteAccountFlowProps) {
 						<Text style={homeStyles.deleteTitle}>Delete your account?</Text>
 
 						<Text style={homeStyles.deleteText}>
-							This permanently deletes your account. You will be removed from all your groups, and groups where you are the only admin will be deleted with their lists. This can&apos;t be undone.
+							This permanently deletes your account and removes you from all your groups. In groups you created, the member who joined first after you becomes the Group Creator. This can&apos;t be undone.
 						</Text>
 
 						<TouchableOpacity
