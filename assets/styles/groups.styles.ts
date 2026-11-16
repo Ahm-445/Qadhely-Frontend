@@ -402,6 +402,106 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			color: "#ffffff",
 		},
 
+		/* ----------------------------- delete group (US 08) ----------------------------- */
+		dialogBackdrop: {
+			flex: 1,
+			justifyContent: "center",
+			padding: 24,
+			backgroundColor: "rgba(15, 23, 42, 0.55)",
+		},
+		dialogCard: {
+			borderRadius: 24,
+			padding: 24,
+		},
+		dialogIcon: {
+			alignSelf: "center",
+			width: 56,
+			height: 56,
+			borderRadius: 28,
+			justifyContent: "center",
+			alignItems: "center",
+			marginBottom: 12,
+			borderWidth: 1.5,
+			borderColor: colors.danger,
+		},
+		dialogTitle: {
+			fontSize: 20,
+			fontWeight: "700",
+			textAlign: "center",
+			color: colors.text,
+		},
+		dialogGroupName: {
+			fontSize: 16,
+			fontWeight: "600",
+			textAlign: "center",
+			marginTop: 4,
+			color: colors.text,
+		},
+		dialogText: {
+			fontSize: 15,
+			fontWeight: "500",
+			lineHeight: 22,
+			textAlign: "center",
+			marginTop: 10,
+			color: colors.textMuted,
+		},
+		dialogAckRow: {
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 10,
+			marginTop: 20,
+			paddingVertical: 12,
+			paddingHorizontal: 14,
+			borderRadius: 14,
+			borderWidth: 1,
+			borderColor: colors.border,
+		},
+		dialogAckText: {
+			flex: 1,
+			fontSize: 15,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		dialogError: {
+			fontSize: 14,
+			fontWeight: "500",
+			textAlign: "center",
+			marginTop: 12,
+			color: colors.danger,
+		},
+		dialogButtons: {
+			flexDirection: "row",
+			gap: 12,
+			marginTop: 20,
+		},
+		dialogButton: {
+			flex: 1,
+			height: 50,
+			borderRadius: 25,
+			justifyContent: "center",
+			alignItems: "center",
+		},
+		dialogCancelButton: {
+			borderWidth: 1.5,
+			borderColor: colors.border,
+		},
+		dialogDeleteButton: {
+			backgroundColor: colors.danger,
+		},
+		dialogButtonDisabled: {
+			opacity: 0.45,
+		},
+		dialogCancelText: {
+			fontSize: 16,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		dialogDeleteText: {
+			fontSize: 16,
+			fontWeight: "700",
+			color: "#ffffff",
+		},
+
 		/* ----------------------------- create group ----------------------------- */
 		formSection: {
 			paddingHorizontal: 24,
