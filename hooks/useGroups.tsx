@@ -240,7 +240,16 @@ function useGroups() {
 		);
 	}, []);
 
-	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem, getItems, removeListItem, updateListItem };
+	// US 08 — DELETE /api/groups/:groupId (the Group Creator only; needs the irreversible-action confirmation)
+	const deleteGroup = useCallback(async (groupId: string) => {
+		return request<{ message: string; groupId: string }>(
+			`/api/groups/${groupId}`,
+			"DELETE",
+			{ confirmed: true }
+		);
+	}, []);
+
+	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem, getItems, removeListItem, updateListItem, deleteGroup };
 }
 
 

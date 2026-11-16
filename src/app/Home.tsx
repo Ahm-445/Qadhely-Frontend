@@ -3,9 +3,10 @@ import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Alert, RefreshControl, SectionList, Share, StatusBar, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Platform, RefreshControl, SectionList, Share, StatusBar, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import DeleteGroupDialog from "../../components/DeleteGroupDialog";
 import GroupCard from "../../components/GroupCard";
 import HomeHeader from "../../components/HomeHeader";
 import { groupEntryHref } from "../../hooks/useGroup";
@@ -17,6 +18,7 @@ import type { Group } from "../../hooks/useGroups";
 // "Created Groups" / "Shared Groups" categories (AC-03, SF-20).
 // US 07 — AC-01: every group the user is a member of, split into
 // "Created Groups" (creator) and "Shared Groups" (admin / member); tap one to open it.
+// US 08 — long press a group you created to delete it (with an irreversible-action confirmation).
 
 function Home() {
 
@@ -26,6 +28,9 @@ function Home() {
 	const { groups, loading, fetchGroups, generateGroupInvite } = useGroups();
 	const [error, setError] = useState("");
 	const [refreshing, setRefreshing] = useState(false);
+
+	// US 08: the group whose delete dialog is open
+	const [groupToDelete, setGroupToDelete] = useState<Group | null>(null);
 
 const handleShareInvite = async (group: Group) => {
   const result = await generateGroupInvite(group.id);
@@ -39,6 +44,17 @@ const handleShareInvite = async (group: Group) => {
     message: `Join my Qadhely shopping group "${group.name}": ${result.data.inviteLink}`,
   });
 };
+
+	// US 08: only the Group Creator can delete; anyone else is told why nothing happens
+	const handleLongPress = (group: Group) => {
+		if (group.myRole === "creator") {
+			setGroupToDelete(group);
+			return;
+		}
+		const message = "Only the Group Creator can delete this group.";
+		if (Platform.OS === "web") window.alert(message);
+		else Alert.alert("Can't delete group", message);
+	};
 
 	const load = useCallback(async () => {
 		const result = await fetchGroups();
@@ -112,6 +128,7 @@ const handleShareInvite = async (group: Group) => {
 							<GroupCard
 								group={item}
 								onShareInvite={handleShareInvite}
+								onLongPress={handleLongPress}
 								onPress={() => router.push(groupEntryHref({
 									id: item.id, name: item.name, myRole: item.myRole, memberCount: String(item.memberCount)
 								}))}
@@ -119,6 +136,12 @@ const handleShareInvite = async (group: Group) => {
 						)}
 					/>
 				)}
+
+				<DeleteGroupDialog
+					group={groupToDelete}
+					onClose={() => setGroupToDelete(null)}
+					onDeleted={() => { setGroupToDelete(null); load(); }}
+				/>
 
 			</SafeAreaView>
 

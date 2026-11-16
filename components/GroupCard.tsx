@@ -11,6 +11,7 @@ interface GroupCardProps {
   group: Group;
   onPress?: () => void;
   onShareInvite?: (group: Group) => void;
+  onLongPress?: (group: Group) => void; // US 08: long press opens "Delete group" for the Group Creator
 }
 
 export const ROLE_LABELS: Record<Group["myRole"], string> = {
@@ -23,6 +24,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
   group,
   onPress,
   onShareInvite,
+  onLongPress,
 }) => {
   const { colors } = useTheme();
   const groupsStyles = createGroupsStyles(colors);
@@ -38,7 +40,10 @@ const GroupCard: React.FC<GroupCardProps> = ({
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={onPress}
-        disabled={!onPress}
+        onLongPress={onLongPress ? () => onLongPress(group) : undefined}
+        delayLongPress={400}
+        disabled={!onPress && !onLongPress}
+        accessibilityHint={onLongPress && group.myRole === "creator" ? "Long press to delete this group" : undefined}
       >
         <LinearGradient
           colors={colors.gradients.surface}
