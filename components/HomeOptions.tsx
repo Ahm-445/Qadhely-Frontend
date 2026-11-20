@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { AccessibilityInfo, Animated, Easing, Text, TouchableOpacity } from "react-native";
 
+import DeleteAccountFlow from "./DeleteAccountFlow";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 
@@ -19,7 +20,7 @@ const OPEN_DURATION = 180;
 const CLOSE_DURATION = 140;
 
 
-// Drop down shown under the "Options" button on Home; for now it only holds "Logout".
+// Drop down shown under the "Options" button on Home: "Logout" and "Delete account" (US 04).
 function HomeOptions({ visible, onClose }: HomeOptionsProps) {
 
 	const { colors } = useTheme();
@@ -32,6 +33,9 @@ function HomeOptions({ visible, onClose }: HomeOptionsProps) {
 	const [translateY] = useState(() => new Animated.Value(-8));
 
 	const [reduceMotion, setReduceMotion] = useState(false);
+
+	// US 04: the delete-account warning and OTP sheet
+	const [deleteOpen, setDeleteOpen] = useState(false);
 
 
 	
@@ -95,7 +99,15 @@ function HomeOptions({ visible, onClose }: HomeOptionsProps) {
 	};
 
 
+	// US 04: close the menu, then show the irreversible-action warning
+	const handleDeleteAccount = () => {
+		onClose();
+		setDeleteOpen(true);
+	};
+
+
 	return (
+		<>
 		<Animated.View
 			pointerEvents={visible ? "auto" : "none"}
 			accessibilityElementsHidden={!visible}
@@ -120,7 +132,24 @@ function HomeOptions({ visible, onClose }: HomeOptionsProps) {
 
 			</TouchableOpacity>
 
+			<TouchableOpacity
+				style={homeStyles.optionRow}
+				activeOpacity={0.8}
+				onPress={handleDeleteAccount}
+			>
+
+				<Ionicons name="trash-outline" size={22} color={colors.danger} />
+
+				<Text style={[homeStyles.logoutText, { flexShrink: 0 }]} numberOfLines={1}>
+					Delete account
+				</Text>
+
+			</TouchableOpacity>
+
 		</Animated.View>
+
+		<DeleteAccountFlow visible={deleteOpen} onClose={() => setDeleteOpen(false)} />
+		</>
 	);
 
 }

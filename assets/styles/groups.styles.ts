@@ -322,6 +322,85 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			justifyContent: "center",
 			alignItems: "center",
 		},
+		/* ------------------------- replacement suggestions (US 22) ------------------------- */
+		listItemReplaced: {
+			opacity: 0.5,
+		},
+		listItemReplacedText: {
+			textDecorationLine: "line-through",
+		},
+		suggestionsSection: {
+			marginTop: -2,
+			marginBottom: 8,
+			paddingLeft: 4,
+		},
+		suggestionsTitle: {
+			fontSize: 13,
+			fontWeight: "700",
+			marginBottom: 8,
+			color: colors.textMuted,
+		},
+		suggestionsRow: {
+			gap: 10,
+			paddingRight: 8,
+		},
+		suggestionCard: {
+			width: 124,
+			padding: 10,
+			borderRadius: 16,
+			borderWidth: 1,
+			borderColor: colors.border,
+			backgroundColor: colors.surface,
+		},
+		suggestionImage: {
+			width: "100%",
+			height: 72,
+			borderRadius: 10,
+			overflow: "hidden",
+			marginBottom: 6,
+			backgroundColor: colors.backgrounds.input,
+		},
+		suggestionName: {
+			fontSize: 13,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		suggestionMeta: {
+			fontSize: 12,
+			fontWeight: "500",
+			marginTop: 2,
+			color: colors.textMuted,
+		},
+		suggestionManualCard: {
+			justifyContent: "center",
+			alignItems: "center",
+			gap: 8,
+			borderStyle: "dashed",
+			borderColor: colors.primary,
+		},
+		suggestionManualText: {
+			fontSize: 14,
+			fontWeight: "700",
+			textAlign: "center",
+			color: colors.primary,
+		},
+		suggestionEmptyCard: {
+			justifyContent: "center",
+		},
+		// US 16: the line under the title of the "suggest a replacement" dialog
+		replacementHint: {
+			fontSize: 14,
+			fontWeight: "500",
+			marginBottom: 12,
+			color: colors.textMuted,
+		},
+		// US 16: the "Not found · Suggested: …" line under a not-found item
+		listItemNotFoundText: {
+			fontSize: 13,
+			fontWeight: "600",
+			marginTop: 4,
+			color: colors.danger,
+		},
 		listItemStatusActions: {
 			flexDirection: "row",
 			gap: 8,
@@ -399,6 +478,106 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			color: colors.text,
 		},
 		modalButtonPrimaryText: {
+			color: "#ffffff",
+		},
+
+		/* ----------------------------- delete group (US 08) ----------------------------- */
+		dialogBackdrop: {
+			flex: 1,
+			justifyContent: "center",
+			padding: 24,
+			backgroundColor: "rgba(15, 23, 42, 0.55)",
+		},
+		dialogCard: {
+			borderRadius: 24,
+			padding: 24,
+		},
+		dialogIcon: {
+			alignSelf: "center",
+			width: 56,
+			height: 56,
+			borderRadius: 28,
+			justifyContent: "center",
+			alignItems: "center",
+			marginBottom: 12,
+			borderWidth: 1.5,
+			borderColor: colors.danger,
+		},
+		dialogTitle: {
+			fontSize: 20,
+			fontWeight: "700",
+			textAlign: "center",
+			color: colors.text,
+		},
+		dialogGroupName: {
+			fontSize: 16,
+			fontWeight: "600",
+			textAlign: "center",
+			marginTop: 4,
+			color: colors.text,
+		},
+		dialogText: {
+			fontSize: 15,
+			fontWeight: "500",
+			lineHeight: 22,
+			textAlign: "center",
+			marginTop: 10,
+			color: colors.textMuted,
+		},
+		dialogAckRow: {
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 10,
+			marginTop: 20,
+			paddingVertical: 12,
+			paddingHorizontal: 14,
+			borderRadius: 14,
+			borderWidth: 1,
+			borderColor: colors.border,
+		},
+		dialogAckText: {
+			flex: 1,
+			fontSize: 15,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		dialogError: {
+			fontSize: 14,
+			fontWeight: "500",
+			textAlign: "center",
+			marginTop: 12,
+			color: colors.danger,
+		},
+		dialogButtons: {
+			flexDirection: "row",
+			gap: 12,
+			marginTop: 20,
+		},
+		dialogButton: {
+			flex: 1,
+			height: 50,
+			borderRadius: 25,
+			justifyContent: "center",
+			alignItems: "center",
+		},
+		dialogCancelButton: {
+			borderWidth: 1.5,
+			borderColor: colors.border,
+		},
+		dialogDeleteButton: {
+			backgroundColor: colors.danger,
+		},
+		dialogButtonDisabled: {
+			opacity: 0.45,
+		},
+		dialogCancelText: {
+			fontSize: 16,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		dialogDeleteText: {
+			fontSize: 16,
+			fontWeight: "700",
 			color: "#ffffff",
 		},
 

@@ -1,5 +1,7 @@
 import { Stack } from "expo-router";
+import { Platform } from "react-native";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import NotificationObserver from "../../components/NotificationObserver";
 import { AuthProvider } from "../../hooks/useAuth";
 import { ThemeProvider } from "../../hooks/useTheme";
 
@@ -12,6 +14,9 @@ export default function RootLayout() {
 			<ThemeProvider>
 
 				<SafeAreaProvider>
+
+					{/* US 18: opens the right group when a notification is tapped (no push on web) */}
+					{Platform.OS !== "web" && <NotificationObserver />}
 
 					<Stack screenOptions={{headerShown: false}}>
 

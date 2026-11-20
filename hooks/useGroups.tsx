@@ -57,7 +57,18 @@ export interface ListItem {
 	customStore: string | null
 	catalogItem: CatalogItem | null	// US 15: the product the backend looked up; null for a custom request
 	createdAt: string
+	// US 16: in-store status, shared with the whole group
+	status: ListItemStatus
+	replacementText: string | null	// only on a not-found item, when the member suggested one
+	statusUpdatedBy: string | null
+	statusUpdatedAt: string | null
+	// US 22: on a replaced item, the item that took its place; on the new item, the one it replaced
+	replacedBy: string | null
+	replacementFor: string | null
 }
+
+// US 16 — "pending" until a member marks the item
+export type ListItemStatus = "pending" | "found" | "notFound" | "replaced";	// "replaced": US 22, set by the server only
 
 type Result<T> = { success: true; data: T } | { success: false; error: string };
 
@@ -240,7 +251,34 @@ function useGroups() {
 		);
 	}, []);
 
-	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem, getItems, removeListItem, updateListItem };
+	// US 16 — PATCH /api/groups/:groupId/items/:itemId/status (any member; replacement text only with "notFound")
+	const setItemStatus = useCallback(async (groupId: string, itemId: string, status: ListItemStatus, replacementText?: string) => {
+		return request<{ message: string; item: ListItem }>(
+			`/api/groups/${groupId}/items/${itemId}/status`,
+			"PATCH",
+			replacementText ? { status, replacementText } : { status }
+		);
+	}, []);
+
+	// US 22 — POST /api/groups/:groupId/items/:itemId/replace (the Group Creator and admins; not-found items only)
+	const replaceListItem = useCallback(async (groupId: string, itemId: string, replacement: { catalogItemId: string; quantity: number; unit: Unit }) => {
+		return request<{ message: string; item: ListItem; replaced: ListItem }>(
+			`/api/groups/${groupId}/items/${itemId}/replace`,
+			"POST",
+			replacement
+		);
+	}, []);
+
+	// US 08 — DELETE /api/groups/:groupId (the Group Creator only; needs the irreversible-action confirmation)
+	const deleteGroup = useCallback(async (groupId: string) => {
+		return request<{ message: string; groupId: string }>(
+			`/api/groups/${groupId}`,
+			"DELETE",
+			{ confirmed: true }
+		);
+	}, []);
+
+	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem, getItems, removeListItem, updateListItem, deleteGroup, setItemStatus, replaceListItem };
 }
 
 

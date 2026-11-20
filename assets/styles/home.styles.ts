@@ -320,6 +320,100 @@ export const createHomeStyles = (colors: ColorScheme) => {
 			color: colors.danger,
 		},
 
+		/* ----------------------- delete account (US 04) ----------------------- */
+		deleteBackdrop: {
+			flex: 1,
+			justifyContent: "center",
+			padding: 24,
+			backgroundColor: "rgba(15, 23, 42, 0.55)",
+		},
+		deleteCard: {
+			borderRadius: 24,
+			padding: 24,
+			backgroundColor: colors.surface,
+		},
+		deleteIcon: {
+			alignSelf: "center",
+			width: 56,
+			height: 56,
+			borderRadius: 28,
+			justifyContent: "center",
+			alignItems: "center",
+			marginBottom: 12,
+			borderWidth: 1.5,
+			borderColor: colors.danger,
+		},
+		deleteTitle: {
+			fontSize: 20,
+			fontWeight: "700",
+			textAlign: "center",
+			color: colors.text,
+		},
+		deleteText: {
+			fontSize: 15,
+			fontWeight: "500",
+			lineHeight: 22,
+			textAlign: "center",
+			marginTop: 10,
+			color: colors.textMuted,
+		},
+		deleteAckRow: {
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 10,
+			marginTop: 20,
+			paddingVertical: 12,
+			paddingHorizontal: 14,
+			borderRadius: 14,
+			borderWidth: 1,
+			borderColor: colors.border,
+		},
+		deleteAckText: {
+			flex: 1,
+			fontSize: 15,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		deleteError: {
+			fontSize: 14,
+			fontWeight: "500",
+			textAlign: "center",
+			marginTop: 12,
+			color: colors.danger,
+		},
+		deleteButtons: {
+			flexDirection: "row",
+			gap: 12,
+			marginTop: 20,
+		},
+		deleteButton: {
+			flex: 1,
+			height: 50,
+			borderRadius: 25,
+			justifyContent: "center",
+			alignItems: "center",
+		},
+		deleteCancelButton: {
+			borderWidth: 1.5,
+			borderColor: colors.border,
+		},
+		deleteConfirmButton: {
+			backgroundColor: colors.danger,
+		},
+		deleteButtonDisabled: {
+			opacity: 0.45,
+		},
+		deleteCancelText: {
+			fontSize: 16,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		deleteConfirmText: {
+			fontSize: 16,
+			fontWeight: "700",
+			color: "#ffffff",
+		},
+
 
 	});
 
