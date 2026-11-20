@@ -87,7 +87,7 @@ function AiSuggestions() {
 
 
 	const emptyMessage = needsHistory
-		? "Add some items to gain a shopping history so we can recommend you stuff. (You must complete at least 3 lists)"
+		? "Add some items to gain a shopping history so we can recommend you stuff. \n(You must complete at least 3 lists)"
 		: "Look at you remembering all your items.";
 
 
