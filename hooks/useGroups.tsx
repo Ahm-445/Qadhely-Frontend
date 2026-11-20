@@ -268,6 +268,15 @@ function useGroups() {
 			replacement
 		);
 	}, []);
+	// AI suggestions — POST /api/groups/:groupId/complete-list (the Group Creator and admins only;
+	// stores the visible list in the group's history and clears it)
+	const completeList = useCallback(async (groupId: string) => {
+		return request<{ message: string; tripId: string; itemCount: number }>(
+			`/api/groups/${groupId}/complete-list`,
+			"POST"
+		);
+	}, []);
+
 
 	// US 08 — DELETE /api/groups/:groupId (the Group Creator only; needs the irreversible-action confirmation)
 	const deleteGroup = useCallback(async (groupId: string) => {
@@ -278,7 +287,7 @@ function useGroups() {
 		);
 	}, []);
 
-	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem, getItems, removeListItem, updateListItem, deleteGroup, setItemStatus, replaceListItem };
+	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem, getItems, removeListItem, updateListItem, deleteGroup, setItemStatus, replaceListItem, completeList };
 }
 
 

@@ -322,6 +322,32 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			justifyContent: "center",
 			alignItems: "center",
 		},
+		/* ------------------------------ complete list ------------------------------ */
+		completeListButton: {
+			flexDirection: "row",
+			alignItems: "center",
+			justifyContent: "center",
+			gap: 8,
+			marginHorizontal: 24,
+			marginTop: 8,
+			marginBottom: 12,
+			paddingVertical: 14,
+			borderRadius: 16,
+			backgroundColor: colors.primary,
+			shadowColor: colors.shadow,
+			shadowOffset: { width: 0, height: 4 },
+			shadowOpacity: 0.15,
+			shadowRadius: 8,
+			elevation: 4,
+		},
+		completeListButtonBusy: {
+			opacity: 0.7,
+		},
+		completeListButtonText: {
+			fontSize: 16,
+			fontWeight: "700",
+			color: "#ffffff",
+		},
 		/* ------------------------- replacement suggestions (US 22) ------------------------- */
 		listItemReplaced: {
 			opacity: 0.5,

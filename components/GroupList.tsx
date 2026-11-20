@@ -37,13 +37,16 @@ function GroupList() {
 	const groupsStyles = createGroupsStyles(colors);
 
 	const { id, name, myRole, memberCount } = useGroup();
-	const { getItems, removeListItem, setItemStatus } = useGroups();
+	const { getItems, removeListItem, setItemStatus, completeList } = useGroups();
 
 	const [items, setItems] = useState<ListItem[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [refreshing, setRefreshing] = useState(false);
 	const [error, setError] = useState("");
 	const [editing, setEditing] = useState<ListItem | null>(null);
+
+	// the "Complete list" press is in flight
+	const [completing, setCompleting] = useState(false);
 
 	// US 16: the item whose "suggest a replacement" dialog is open
 	const [markingNotFound, setMarkingNotFound] = useState<ListItem | null>(null);
@@ -58,6 +61,9 @@ function GroupList() {
 	// US 14: the same roles edit and remove items
 	const canManage = isGroupManager(myRole);
 
+
+	// the admin can close the list once nothing is left pending; a replaced item is resolved
+	const canComplete = canManage && items.length > 0 && items.every((item) => item.status !== "pending");
 
 	const load = useCallback(async () => {
 		const result = await getItems(id);
@@ -131,6 +137,35 @@ function GroupList() {
 		]);
 	};
 
+	// the admin closes the list: what is on it goes to the group's history and the list is cleared
+	const complete = async () => {
+		setCompleting(true);
+		const result = await completeList(id);
+		setCompleting(false);
+
+		if (result.success) {
+			setItems([]);
+			load();
+		}
+		else {
+			Alert.alert("Could not complete the list", result.error);
+			load();
+		}
+	};
+
+	const confirmComplete = () => {
+		const count = items.length;
+
+		Alert.alert(
+			"Complete list",
+			`The ${count} ${count === 1 ? "item" : "items"} on this list will be saved to the group's history and the list will be cleared.`,
+			[
+				{ text: "Cancel", style: "cancel" },
+				{ text: "Complete", onPress: () => complete() },
+			]
+		);
+	};
+
 
 	return (
 		<LinearGradient colors={colors.gradients.background} style={groupsStyles.container}>
@@ -189,6 +224,26 @@ function GroupList() {
 						}
 						ListEmptyComponent={<Text style={groupsStyles.sectionEmpty}>No items in this list yet.</Text>}
 					/>
+				)}
+
+
+				{canComplete && (
+					<TouchableOpacity
+						style={[groupsStyles.completeListButton, completing && groupsStyles.completeListButtonBusy]}
+						activeOpacity={0.85}
+						onPress={confirmComplete}
+						disabled={completing}
+						accessibilityLabel="Complete list"
+					>
+						{completing ? (
+							<ActivityIndicator color="#ffffff" />
+						) : (
+							<>
+								<Ionicons name="checkmark-done-outline" size={20} color="#ffffff" />
+								<Text style={groupsStyles.completeListButtonText}>Complete list</Text>
+							</>
+						)}
+					</TouchableOpacity>
 				)}
 
 				{editing && (
