@@ -10,6 +10,8 @@ import EditItemModal from "./EditItemModal";
 import { ROLE_LABELS } from "./GroupCard";
 import GroupHeader from "./GroupHeader";
 import ItemCard, { type ItemStatus } from "./ItemCard";
+import ReplaceItemModal from "./ReplaceItemModal";
+import ReplacementSuggestions from "./ReplacementSuggestions";
 import ReplacementTextModal from "./ReplacementTextModal";
 import { isGroupManager, useGroup } from "../hooks/useGroup";
 import useGroups, { type ListItem } from "../hooks/useGroups";
@@ -24,6 +26,8 @@ import { listItemName } from "../services/catalog";
 // US 16 — ✓ / X save the item's status on the server for the whole group; X asks for an optional
 //         replacement suggestion. While the tab is open the list re-reads the server every 10 seconds,
 //         so everyone sees each other's marks.
+// US 22 — under each not-found item, admins get a horizontal row of catalog suggestions (and
+//         "Edit manually"); applying one replaces the item. Replaced items sit at the end, crossed out.
 
 const AUTO_REFRESH_MS = 10000;
 
@@ -43,6 +47,9 @@ function GroupList() {
 
 	// US 16: the item whose "suggest a replacement" dialog is open
 	const [markingNotFound, setMarkingNotFound] = useState<ListItem | null>(null);
+
+	// US 22: the not-found item being replaced, and the suggestion picked (null = search first)
+	const [replacing, setReplacing] = useState<{ item: ListItem; pickedItemId: string | null; query: string } | null>(null);
 
 	const count = Number(memberCount) || 0;
 	const members = `${count} ${count === 1 ? "member" : "members"}`;
@@ -155,13 +162,22 @@ function GroupList() {
 						data={items}
 						keyExtractor={(item) => item.id}
 						renderItem={({ item }) => (
-							<ItemCard
-								item={item}
-								canManage={canManage}
-								onStatusChange={(status) => handleStatusChange(item, status)}
-								onEdit={() => setEditing(item)}
-								onRemove={() => confirmRemove(item)}
-							/>
+							<View>
+								<ItemCard
+									item={item}
+									canManage={canManage}
+									onStatusChange={(status) => handleStatusChange(item, status)}
+									onEdit={() => setEditing(item)}
+									onRemove={() => confirmRemove(item)}
+								/>
+								{canManage && item.status === "notFound" && (
+									<ReplacementSuggestions
+										item={item}
+										onPick={(catalogItemId) => setReplacing({ item, pickedItemId: catalogItemId, query: "" })}
+										onEditManually={(query) => setReplacing({ item, pickedItemId: null, query })}
+									/>
+								)}
+							</View>
 						)}
 						contentContainerStyle={groupsStyles.listContent}
 						refreshControl={
@@ -183,6 +199,16 @@ function GroupList() {
 							setItems((current) => current.map((i) => (i.id === saved.id ? saved : i)));
 							setEditing(null);
 						}}
+					/>
+				)}
+
+				{replacing && (
+					<ReplaceItemModal
+						item={replacing.item}
+						pickedItemId={replacing.pickedItemId}
+						searchQuery={replacing.query}
+						onClose={() => setReplacing(null)}
+						onReplaced={() => { setReplacing(null); load(); }}
 					/>
 				)}
 

@@ -34,17 +34,23 @@ const QUERY_MAX_LENGTH = 100; // the backend rejects a longer search
 interface AddItemSearchProps {
 	/** The user picked a product from the results. */
 	onPickItem: (itemId: string) => void
+	/** US 22: start with this text in the search bar and search it right away (empty = empty bar). */
+	initialQuery?: string
+	/** US 22: a title instead of "Add items · <group>". */
+	title?: string
+	/** US 22: what Back does when the search is shown on top of the list. */
+	onBack?: () => void
 }
 
 
-function AddItemSearch({ onPickItem }: AddItemSearchProps) {
+function AddItemSearch({ onPickItem, initialQuery = "", title, onBack }: AddItemSearchProps) {
 
 	const { colors } = useTheme();
 	const groupsStyles = createGroupsStyles(colors);
 
 	const { name } = useGroup();
 
-	const [query, setQuery] = useState("");
+	const [query, setQuery] = useState(initialQuery);
 	const [searchFocused, setSearchFocused] = useState(false);
 
 	const [items, setItems] = useState<CatalogItem[]>([]);
@@ -114,6 +120,18 @@ function AddItemSearch({ onPickItem }: AddItemSearchProps) {
 
 		setSearching(false);
 	};
+
+
+	// US 22 AC-01: the suggested replacement text is searched as soon as the screen opens
+	useEffect(() => {
+		const start = initialQuery.trim();
+		if (start === "") return;
+		// started right after the first render, like a search the user submitted
+		const timer = setTimeout(() => runSearch(start), 0);
+		return () => clearTimeout(timer);
+	// only once, for the text the screen was opened with
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 
 	const loadMore = async () => {
@@ -255,12 +273,12 @@ function AddItemSearch({ onPickItem }: AddItemSearchProps) {
 
 			<SafeAreaView edges={["top", "left", "right"]} style={groupsStyles.safeArea}>
 
-				<BackButton />
+				<BackButton onPress={onBack} />
 
 				<View style={groupsStyles.searchSection}>
 
 					<Text style={groupsStyles.sectionTitle} numberOfLines={2}>
-						Add items{name ? ` · ${name}` : ""}
+						{title ?? `Add items${name ? ` · ${name}` : ""}`}
 					</Text>
 
 					<View style={[groupsStyles.searchBar, searchFocused && groupsStyles.searchBarFocused]}>
