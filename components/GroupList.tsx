@@ -10,6 +10,7 @@ import EditItemModal from "./EditItemModal";
 import { ROLE_LABELS } from "./GroupCard";
 import GroupHeader from "./GroupHeader";
 import ItemCard, { type ItemStatus } from "./ItemCard";
+import ReplacementTextModal from "./ReplacementTextModal";
 import { isGroupManager, useGroup } from "../hooks/useGroup";
 import useGroups, { type ListItem } from "../hooks/useGroups";
 import { useTheme } from "../hooks/useTheme";
@@ -20,6 +21,11 @@ import { listItemName } from "../services/catalog";
 // The group's details come from hooks/useGroup (Home passed them as route params).
 // US 15 — the group's items, reloaded each time the tab is shown and on pull-to-refresh.
 // US 13 — the trash button removes the item on the server (DELETE /api/groups/:groupId/items/:itemId).
+// US 16 — ✓ / X save the item's status on the server for the whole group; X asks for an optional
+//         replacement suggestion. While the tab is open the list re-reads the server every 10 seconds,
+//         so everyone sees each other's marks.
+
+const AUTO_REFRESH_MS = 10000;
 
 function GroupList() {
 
@@ -27,7 +33,7 @@ function GroupList() {
 	const groupsStyles = createGroupsStyles(colors);
 
 	const { id, name, myRole, memberCount } = useGroup();
-	const { getItems, removeListItem } = useGroups();
+	const { getItems, removeListItem, setItemStatus } = useGroups();
 
 	const [items, setItems] = useState<ListItem[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -35,8 +41,8 @@ function GroupList() {
 	const [error, setError] = useState("");
 	const [editing, setEditing] = useState<ListItem | null>(null);
 
-	// shortcut: found / not found lives on this phone only, send it to the backend when US 16 adds a status
-	const [statuses, setStatuses] = useState<Record<string, ItemStatus>>({});
+	// US 16: the item whose "suggest a replacement" dialog is open
+	const [markingNotFound, setMarkingNotFound] = useState<ListItem | null>(null);
 
 	const count = Number(memberCount) || 0;
 	const members = `${count} ${count === 1 ? "member" : "members"}`;
@@ -61,11 +67,41 @@ function GroupList() {
 		setRefreshing(false);
 	}, [id, getItems]);
 
+	// load when the tab is shown, then every 10 seconds until it is left (US 16 sync)
 	useFocusEffect(
 		useCallback(() => {
 			load();
+			const timer = setInterval(load, AUTO_REFRESH_MS);
+			return () => clearInterval(timer);
 		}, [load])
 	);
+
+
+	// US 16: save a status on the server; the card updates as soon as the server answers
+	const saveStatus = async (item: ListItem, status: ListItem["status"], replacementText?: string) => {
+		const result = await setItemStatus(id, item.id, status, replacementText);
+
+		if (!result.success) {
+			throw new Error(result.error);
+		}
+
+		setItems((current) => current.map((i) => (i.id === result.data.item.id ? result.data.item : i)));
+	};
+
+	// tapping the active button again undoes the mark; X opens the replacement suggestion first
+	const handleStatusChange = (item: ListItem, chosen: ItemStatus) => {
+		if (item.status === chosen) {
+			saveStatus(item, "pending").catch((e) => Alert.alert("Could not update the item", e.message));
+			return;
+		}
+
+		if (chosen === "notFound") {
+			setMarkingNotFound(item);
+			return;
+		}
+
+		saveStatus(item, chosen).catch((e) => Alert.alert("Could not update the item", e.message));
+	};
 
 
 	// US 13 AC-01: the admin removes the item from the list on the server, then from this screen
@@ -121,9 +157,8 @@ function GroupList() {
 						renderItem={({ item }) => (
 							<ItemCard
 								item={item}
-								status={statuses[item.id]}
 								canManage={canManage}
-								onStatusChange={(status) => setStatuses((current) => ({ ...current, [item.id]: status }))}
+								onStatusChange={(status) => handleStatusChange(item, status)}
 								onEdit={() => setEditing(item)}
 								onRemove={() => confirmRemove(item)}
 							/>
@@ -147,6 +182,17 @@ function GroupList() {
 						onSaved={(saved) => {
 							setItems((current) => current.map((i) => (i.id === saved.id ? saved : i)));
 							setEditing(null);
+						}}
+					/>
+				)}
+
+				{markingNotFound && (
+					<ReplacementTextModal
+						item={markingNotFound}
+						onClose={() => setMarkingNotFound(null)}
+						onSubmit={async (text) => {
+							await saveStatus(markingNotFound, "notFound", text || undefined);
+							setMarkingNotFound(null);
 						}}
 					/>
 				)}

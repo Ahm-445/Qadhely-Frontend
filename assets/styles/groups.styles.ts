@@ -322,6 +322,20 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			justifyContent: "center",
 			alignItems: "center",
 		},
+		// US 16: the line under the title of the "suggest a replacement" dialog
+		replacementHint: {
+			fontSize: 14,
+			fontWeight: "500",
+			marginBottom: 12,
+			color: colors.textMuted,
+		},
+		// US 16: the "Not found · Suggested: …" line under a not-found item
+		listItemNotFoundText: {
+			fontSize: 13,
+			fontWeight: "600",
+			marginTop: 4,
+			color: colors.danger,
+		},
 		listItemStatusActions: {
 			flexDirection: "row",
 			gap: 8,

@@ -12,12 +12,13 @@ import { listItemName } from "../services/catalog";
 // US 15 — one item of the shopping list: name, image, quantity, unit and store (AC-01).
 // The row stores a catalog id; the backend sends that product with it (or the custom request's own fields).
 // The pencil and trash buttons are for the Group Creator and admins only.
+// US 16 — the X / ✓ buttons show the item's shared status; any member can tap them.
+// A not-found item shows the replacement the member suggested, if any.
 
 export type ItemStatus = "found" | "notFound";
 
 type ItemCardProps = {
 	item: ListItem
-	status?: ItemStatus
 	canManage: boolean
 	onStatusChange: (status: ItemStatus) => void
 	onEdit: () => void
@@ -25,7 +26,7 @@ type ItemCardProps = {
 }
 
 
-function ItemCard({ item, status, canManage, onStatusChange, onEdit, onRemove }: ItemCardProps) {
+function ItemCard({ item, canManage, onStatusChange, onEdit, onRemove }: ItemCardProps) {
 
 	const { colors } = useTheme();
 	const groupsStyles = createGroupsStyles(colors);
@@ -33,6 +34,7 @@ function ItemCard({ item, status, canManage, onStatusChange, onEdit, onRemove }:
 	const name = listItemName(item);
 	const image = item.catalogItem?.image ?? item.customImage;
 	const store = item.catalogItem?.store ?? item.customStore;
+	const status = item.status;
 
 
 	return (
@@ -47,6 +49,12 @@ function ItemCard({ item, status, canManage, onStatusChange, onEdit, onRemove }:
 				<Text style={groupsStyles.listItemName} numberOfLines={2}>{name}</Text>
 				<Text style={groupsStyles.listItemMeta}>Qty: {item.quantity} {item.unit}</Text>
 				{!!store && <Text style={groupsStyles.listItemMeta} numberOfLines={1}>{store}</Text>}
+
+				{status === "notFound" && (
+					<Text style={groupsStyles.listItemNotFoundText} numberOfLines={2}>
+						{item.replacementText ? `Not found · Suggested: ${item.replacementText}` : "Not found"}
+					</Text>
+				)}
 
 				{canManage && (
 					<View style={groupsStyles.listItemAdminActions}>
