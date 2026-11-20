@@ -10,8 +10,14 @@ import { groupEntryHref } from "../hooks/useGroup";
 // This turns that into the same route the Home screen uses to open a group, so the group opens
 // exactly as if the user had tapped it there. Anything unexpected returns null: the app then
 // ignores the tap instead of opening a wrong screen.
+//
+// US 21 AC-02 — the "list completed" notification has the same data with type "list_completed",
+// and opens the same group screen.
 
 export const ITEMS_ADDED_NOTIFICATION = "items_added";
+export const LIST_COMPLETED_NOTIFICATION = "list_completed";
+
+const GROUP_NOTIFICATION_TYPES: unknown[] = [ITEMS_ADDED_NOTIFICATION, LIST_COMPLETED_NOTIFICATION];
 
 // a MongoDB ObjectId, which is what the backend uses for a group id
 const GROUP_ID_PATTERN = /^[0-9a-fA-F]{24}$/;
@@ -28,14 +34,14 @@ function nonEmptyText(value: unknown): string | null {
 }
 
 
-/** The group route for a notification's data, or null when it is not a usable "items added" notification. */
+/** The group route for a notification's data, or null when it is not a usable "items added" or "list completed" notification. */
 export function notificationHref(data: unknown): Href | null {
 
 	if (typeof data !== "object" || data === null || Array.isArray(data)) return null;
 
 	const payload = data as Record<string, unknown>;
 
-	if (payload.type !== ITEMS_ADDED_NOTIFICATION) return null;
+	if (!GROUP_NOTIFICATION_TYPES.includes(payload.type)) return null;
 
 	const id = nonEmptyText(payload.groupId);
 
