@@ -767,6 +767,14 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			fontWeight: "600",
 			color: colors.textMuted,
 		},
+		// US 23: the line under a suggested product ("Usually every 7 days, last bought 9 days ago")
+		itemNote: {
+			fontSize: 13,
+			fontWeight: "600",
+			lineHeight: 18,
+			marginTop: 6,
+			color: colors.primary,
+		},
 		quantityRow: {
 			flexDirection: "row",
 			alignItems: "flex-start",

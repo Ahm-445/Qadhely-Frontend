@@ -48,10 +48,13 @@ interface AddItemFormProps {
 	onCancel: () => void
 	/** US 22: replace this not-found item instead of adding a new one (quantity and unit start from it). */
 	replacing?: ListItem
+	/** US 23: start with this quantity and unit — the amount a suggestion says the group usually takes. */
+	initialQuantity?: string
+	initialUnit?: Unit
 }
 
 
-function AddItemForm({ itemId, onAdded, onCancel, replacing }: AddItemFormProps) {
+function AddItemForm({ itemId, onAdded, onCancel, replacing, initialQuantity = "", initialUnit }: AddItemFormProps) {
 
 	const { colors } = useTheme();
 	const groupsStyles = createGroupsStyles(colors);
@@ -62,8 +65,11 @@ function AddItemForm({ itemId, onAdded, onCancel, replacing }: AddItemFormProps)
 	// the catalog lookup is the one place that knows an item's details
 	const item = useMemo(() => getCatalogItem(itemId), [itemId]);
 
-	const [quantity, setQuantity] = useState(replacing ? String(replacing.quantity) : "");
-	const [unit, setUnit] = useState<Unit>(replacing?.unit ?? "piece");
+	// US 22 / US 23: the form starts from the item being replaced, else from the suggested amount, else empty
+	const startUnit: Unit = replacing?.unit ?? initialUnit ?? "piece";
+
+	const [quantity, setQuantity] = useState(() => sanitizeQuantityInput(replacing ? String(replacing.quantity) : initialQuantity, startUnit));
+	const [unit, setUnit] = useState<Unit>(startUnit);
 	const [unitPickerOpen, setUnitPickerOpen] = useState(false);
 	const [quantityFocused, setQuantityFocused] = useState(false);
 	const [saving, setSaving] = useState(false);

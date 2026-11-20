@@ -70,6 +70,16 @@ export interface ListItem {
 // US 16 — "pending" until a member marks the item
 export type ListItemStatus = "pending" | "found" | "notFound" | "replaced";	// "replaced": US 22, set by the server only
 
+// US 23 — one row of GET /api/groups/:groupId/suggestions
+export interface Suggestion {
+	catalogItemId: string
+	catalogItem: CatalogItem
+	probability: number	// 0-1: how likely the model thinks the group needs it on the next shop
+	reason: string	// "Usually every 7 days, last bought 9 days ago"
+	suggestedQuantity: number	// the amount the group usually takes
+	suggestedUnit: Unit
+}
+
 type Result<T> = { success: true; data: T } | { success: false; error: string };
 
 
@@ -234,6 +244,16 @@ function useGroups() {
 		);
 	}, []);
 
+	// US 23 — GET /api/groups/:groupId/suggestions (the Group Creator and admins only; others get 403).
+	// An empty list is a normal answer: `code` says why ("NOT_ENOUGH_HISTORY", or null when the model
+	// simply had nothing over its threshold).
+	const getSuggestions = useCallback(async (groupId: string) => {
+		return request<{ groupId: string; modelVersion: string; code: string | null; suggestions: Suggestion[] }>(
+			`/api/groups/${groupId}/suggestions`,
+			"GET"
+		);
+	}, []);
+
 	// US 13 — DELETE /api/groups/:groupId/items/:itemId (the Group Creator and admins only; others get 403)
 	const removeListItem = useCallback(async (groupId: string, itemId: string) => {
 		return request<{ message: string; itemId: string }>(
@@ -287,7 +307,7 @@ function useGroups() {
 		);
 	}, []);
 
-	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem, getItems, removeListItem, updateListItem, deleteGroup, setItemStatus, replaceListItem, completeList };
+	return { groups, loading, fetchGroups, createGroup, getRegisteredContacts, generateGroupInvite, joinGroupByInvite, getGroupMembers, addGroupMember, addListItem, getItems, getSuggestions, removeListItem, updateListItem, deleteGroup, setItemStatus, replaceListItem, completeList };
 }
 
 

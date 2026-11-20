@@ -1,6 +1,5 @@
 import { createGroupsStyles } from "@/assets/styles/groups.styles";
 import { Ionicons } from "@react-native-vector-icons/ionicons";
-import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -16,8 +15,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useGroup } from "../hooks/useGroup";
 import { useTheme } from "../hooks/useTheme";
-import { CATALOG_PAGE_SIZE, catalogItemSize, catalogItemTitle, searchCatalog, type CatalogItem } from "../services/catalog";
+import { CATALOG_PAGE_SIZE, searchCatalog, type CatalogItem } from "../services/catalog";
 import BackButton from "./BackButton";
+import CatalogItemCard from "./CatalogItemCard";
 
 
 // US 12 — the "Add items" tab, shown to the Group Creator and admins only.
@@ -213,57 +213,9 @@ function AddItemSearch({ onPickItem, initialQuery = "", title, onBack }: AddItem
 	const showNoResults = !showHint && !searching && error === null && items.length === 0;
 
 
-	const renderItem = ({ item }: { item: CatalogItem }) => {
-
-		const size = catalogItemSize(item);
-
-		return (
-			<TouchableOpacity
-				activeOpacity={0.8}
-				onPress={() => onPickItem(item.id)}
-				accessibilityRole="button"
-				accessibilityLabel={`${catalogItemTitle(item)}${item.store ? `, ${item.store}` : ""}`}
-			>
-
-				<LinearGradient colors={colors.gradients.surface} style={groupsStyles.itemCard}>
-
-					<View style={[groupsStyles.itemImageWrap, groupsStyles.resultImageWrap, { backgroundColor: colors.backgrounds.editInput }]}>
-						{item.image ? (
-							<Image
-								source={{ uri: item.image }}
-								style={groupsStyles.itemImage}
-								contentFit="cover"
-								transition={200}
-							/>
-						) : (
-							<Ionicons name="image-outline" size={26} color={colors.textMuted} />
-						)}
-					</View>
-
-					<View style={groupsStyles.itemTextContainer}>
-
-						{item.brand_en ? <Text style={groupsStyles.itemBrand} numberOfLines={1}>{item.brand_en}</Text> : null}
-
-						<Text style={groupsStyles.itemName} numberOfLines={2}>{item.name_en}</Text>
-
-						{size !== "" ? <Text style={groupsStyles.itemSize}>{size}</Text> : null}
-
-						{item.store ? (
-							<View style={groupsStyles.itemStore}>
-								<Ionicons name="storefront-outline" size={14} color={colors.textMuted} />
-								<Text style={groupsStyles.itemStoreText} numberOfLines={1}>{item.store}</Text>
-							</View>
-						) : null}
-
-					</View>
-
-					<Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
-
-				</LinearGradient>
-
-			</TouchableOpacity>
-		);
-	};
+	const renderItem = ({ item }: { item: CatalogItem }) => (
+		<CatalogItemCard item={item} onPress={() => onPickItem(item.id)} />
+	);
 
 
 	return (
