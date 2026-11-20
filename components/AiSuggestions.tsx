@@ -6,14 +6,14 @@ import { useCallback, useState } from "react";
 import { ActivityIndicator, FlatList, RefreshControl, StatusBar, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import AddItemForm from "./AddItemForm";
-import BackButton from "./BackButton";
-import CatalogItemCard from "./CatalogItemCard";
 import { useGroup } from "../hooks/useGroup";
 import useGroups, { type Suggestion } from "../hooks/useGroups";
 import { useTheme } from "../hooks/useTheme";
 import { rememberCatalogItems } from "../services/catalog";
 import { UNITS, type Unit } from "../utils/quantity";
+import AddItemForm from "./AddItemForm";
+import BackButton from "./BackButton";
+import CatalogItemCard from "./CatalogItemCard";
 
 
 // US 07 / US 23 — the "AI suggestions" tab, shown to the Group Creator and admins only.
@@ -87,7 +87,7 @@ function AiSuggestions() {
 
 
 	const emptyMessage = needsHistory
-		? "Add some items to gain a shopping history so we can recommend you stuff."
+		? "Add some items to gain a shopping history so we can recommend you stuff. (You must complete at least 3 lists)"
 		: "Look at you remembering all your items.";
 
 
