@@ -2,7 +2,7 @@ import { Href } from "expo-router";
 import { createContext, ReactNode, useContext } from "react";
 import type { Group } from "./useGroups";
 
-// This file is used for internal group managment (Which screens are visible to a particular user)
+// This file is used for internal group managment (Which screens are visible to a particular user, i.e Know which group you're in)
 // US 12 — the group the user opened on the Home page.
 // Home passes its details as route params (no extra request needed); the (tabs) layout
 // reads them once and hands them down, because the three tab screens are siblings of

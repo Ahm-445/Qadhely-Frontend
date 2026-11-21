@@ -19,9 +19,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import BackButton from "./BackButton";
 import { useGroup } from "../hooks/useGroup";
-import useGroups from "../hooks/useGroups";
+import useGroups, { type ListItem } from "../hooks/useGroups";
 import { useTheme } from "../hooks/useTheme";
-import { catalogItemSize, catalogItemTitle, getCatalogItem } from "../services/catalog";
+import { catalogItemSize, catalogItemTitle, getCatalogItem, listItemName } from "../services/catalog";
 import {
 	UNITS,
 	UNIT_LABELS,
@@ -46,22 +46,30 @@ interface AddItemFormProps {
 	onAdded: () => void
 	/** The user backed out without adding. */
 	onCancel: () => void
+	/** US 22: replace this not-found item instead of adding a new one (quantity and unit start from it). */
+	replacing?: ListItem
+	/** US 23: start with this quantity and unit — the amount a suggestion says the group usually takes. */
+	initialQuantity?: string
+	initialUnit?: Unit
 }
 
 
-function AddItemForm({ itemId, onAdded, onCancel }: AddItemFormProps) {
+function AddItemForm({ itemId, onAdded, onCancel, replacing, initialQuantity = "", initialUnit }: AddItemFormProps) {
 
 	const { colors } = useTheme();
 	const groupsStyles = createGroupsStyles(colors);
 
 	const { id: groupId, name: groupName } = useGroup();
-	const { addListItem } = useGroups();
+	const { addListItem, replaceListItem } = useGroups();
 
 	// the catalog lookup is the one place that knows an item's details
 	const item = useMemo(() => getCatalogItem(itemId), [itemId]);
 
-	const [quantity, setQuantity] = useState("");
-	const [unit, setUnit] = useState<Unit>("piece");
+	// US 22 / US 23: the form starts from the item being replaced, else from the suggested amount, else empty
+	const startUnit: Unit = replacing?.unit ?? initialUnit ?? "piece";
+
+	const [quantity, setQuantity] = useState(() => sanitizeQuantityInput(replacing ? String(replacing.quantity) : initialQuantity, startUnit));
+	const [unit, setUnit] = useState<Unit>(startUnit);
 	const [unitPickerOpen, setUnitPickerOpen] = useState(false);
 	const [quantityFocused, setQuantityFocused] = useState(false);
 	const [saving, setSaving] = useState(false);
@@ -96,7 +104,10 @@ function AddItemForm({ itemId, onAdded, onCancel }: AddItemFormProps) {
 		setSaving(true);
 		setError(null);
 
-		const result = await addListItem(groupId, { catalogItemId: item.id, quantity: value, unit });
+		const change = { catalogItemId: item.id, quantity: value, unit };
+		const result = replacing
+			? await replaceListItem(groupId, replacing.id, change)
+			: await addListItem(groupId, change);
 
 		setSaving(false);
 
@@ -105,7 +116,7 @@ function AddItemForm({ itemId, onAdded, onCancel }: AddItemFormProps) {
 			return;
 		}
 
-		Alert.alert("Added to the list", catalogItemTitle(item));
+		if (!replacing) Alert.alert("Added to the list", catalogItemTitle(item));
 		onAdded();
 	};
 
@@ -152,7 +163,7 @@ function AddItemForm({ itemId, onAdded, onCancel }: AddItemFormProps) {
 				<ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={groupsStyles.formSection}>
 
 					<Text style={groupsStyles.sectionTitle} numberOfLines={2}>
-						Add item{groupName ? ` · ${groupName}` : ""}
+						{replacing ? `Replace ${listItemName(replacing)}` : `Add item${groupName ? ` · ${groupName}` : ""}`}
 					</Text>
 
 					<LinearGradient colors={colors.gradients.surface} style={groupsStyles.itemCard}>
@@ -273,7 +284,7 @@ function AddItemForm({ itemId, onAdded, onCancel }: AddItemFormProps) {
 							) : (
 								<>
 									<Ionicons name="add-circle-outline" size={24} color="#ffffff" />
-									<Text style={groupsStyles.createButtonText}>Add to list</Text>
+									<Text style={groupsStyles.createButtonText}>{replacing ? "Replace item" : "Add to list"}</Text>
 								</>
 							)}
 

@@ -35,9 +35,21 @@ export interface CatalogSearchPage {
 /** How many products one request asks for. */
 export const CATALOG_PAGE_SIZE = 20;
 
-// Every product the search has returned, by id. getCatalogItem reads from here, so a product the
-// user just picked in the results is always found without another request.
+// Every product the app has seen, by id. getCatalogItem reads from here, so a product the user just
+// picked is always found without another request.
 const catalogCache = new Map<string, CatalogItem>();
+
+
+/**
+ * Keeps these products where getCatalogItem can find them. searchCatalog calls it for every page; US 23
+ * calls it for the AI suggestions, because the Add Item form looks a suggested product up here and the
+ * user never searched for it.
+ */
+export function rememberCatalogItems(items: CatalogItem[]) {
+	for (const item of items) {
+		catalogCache.set(item.id, item);
+	}
+}
 
 const REQUEST_TIMEOUT_MS = 15000;
 
@@ -123,18 +135,16 @@ export async function searchCatalog(
 		throw new Error("Unexpected response from the server. Please try again.");
 	}
 
-	for (const item of data.items as CatalogItem[]) {
-		catalogCache.set(item.id, item);
-	}
+	rememberCatalogItems(data.items as CatalogItem[]);
 
 	return data as CatalogSearchPage;
 }
 
 
 /**
- * The catalog item for an id, or null when this session has not seen it. It is synchronous and
- * reads the products that searchCatalog has returned, which always includes one the user just
- * picked from the search results.
+ * The catalog item for an id, or null when this session has not seen it. It is synchronous and reads
+ * the products searchCatalog returned or that rememberCatalogItems kept, which always includes one
+ * the user just picked from the screen they picked it on.
  */
 export function getCatalogItem(id: string): CatalogItem | null {
 	return catalogCache.get(id) ?? null;
@@ -154,7 +164,7 @@ export function catalogItemSize(item: CatalogItem): string {
 }
 
 
-/** "Al Gharbia Large White Eggs Plastic Packaging 30 pcs" — brand, name and size, as one line. */
+/** Ex: "Al Gharbia Large White Eggs Plastic Packaging 30 pcs" — brand, name and size, as one line. */
 export function catalogItemTitle(item: CatalogItem): string {
 	return [item.brand_en, item.name_en, catalogItemSize(item)].filter(Boolean).join(" ");
 }

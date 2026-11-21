@@ -14,6 +14,8 @@ import { listItemName } from "../services/catalog";
 // The pencil and trash buttons are for the Group Creator and admins only.
 // US 16 — the X / ✓ buttons show the item's shared status; any member can tap them.
 // A not-found item shows the replacement the member suggested, if any.
+// US 22 — a replaced item stays at the end of the list, crossed out and faded, for everyone;
+// it can no longer be marked or edited (admins can still remove it).
 
 export type ItemStatus = "found" | "notFound";
 
@@ -35,10 +37,12 @@ function ItemCard({ item, canManage, onStatusChange, onEdit, onRemove }: ItemCar
 	const image = item.catalogItem?.image ?? item.customImage;
 	const store = item.catalogItem?.store ?? item.customStore;
 	const status = item.status;
+	const replaced = status === "replaced";
+	const crossed = replaced ? groupsStyles.listItemReplacedText : null;
 
 
 	return (
-		<LinearGradient colors={colors.gradients.surface} style={groupsStyles.listItemCard}>
+		<LinearGradient colors={colors.gradients.surface} style={[groupsStyles.listItemCard, replaced && groupsStyles.listItemReplaced]}>
 
 			<View style={groupsStyles.listItemImage}>
 				{!!image && <Image source={image} style={groupsStyles.listItemImageFill} contentFit="contain" />}
@@ -46,9 +50,11 @@ function ItemCard({ item, canManage, onStatusChange, onEdit, onRemove }: ItemCar
 
 			<View style={groupsStyles.listItemInfo}>
 
-				<Text style={groupsStyles.listItemName} numberOfLines={2}>{name}</Text>
-				<Text style={groupsStyles.listItemMeta}>Qty: {item.quantity} {item.unit}</Text>
-				{!!store && <Text style={groupsStyles.listItemMeta} numberOfLines={1}>{store}</Text>}
+				<Text style={[groupsStyles.listItemName, crossed]} numberOfLines={2}>{name}</Text>
+				<Text style={[groupsStyles.listItemMeta, crossed]}>Qty: {item.quantity} {item.unit}</Text>
+				{!!store && <Text style={[groupsStyles.listItemMeta, crossed]} numberOfLines={1}>{store}</Text>}
+
+				{replaced && <Text style={groupsStyles.listItemMeta}>Replaced</Text>}
 
 				{status === "notFound" && (
 					<Text style={groupsStyles.listItemNotFoundText} numberOfLines={2}>
@@ -59,7 +65,7 @@ function ItemCard({ item, canManage, onStatusChange, onEdit, onRemove }: ItemCar
 				{canManage && (
 					<View style={groupsStyles.listItemAdminActions}>
 
-						<TouchableOpacity
+						{!replaced && <TouchableOpacity
 							style={groupsStyles.listItemAdminButton}
 							activeOpacity={0.8}
 							onPress={onEdit}
@@ -68,7 +74,7 @@ function ItemCard({ item, canManage, onStatusChange, onEdit, onRemove }: ItemCar
 							accessibilityLabel={`Edit ${name}`}
 						>
 							<Ionicons name="pencil-outline" size={18} color={colors.primary} />
-						</TouchableOpacity>
+						</TouchableOpacity>}
 
 						<TouchableOpacity
 							style={groupsStyles.listItemAdminButton}
@@ -86,7 +92,7 @@ function ItemCard({ item, canManage, onStatusChange, onEdit, onRemove }: ItemCar
 
 			</View>
 
-			<View style={groupsStyles.listItemStatusActions}>
+			{!replaced && <View style={groupsStyles.listItemStatusActions}>
 
 				<TouchableOpacity
 					style={[groupsStyles.listItemStatusButton, status === "notFound" && { borderColor: colors.danger, backgroundColor: colors.danger }]}
@@ -110,7 +116,7 @@ function ItemCard({ item, canManage, onStatusChange, onEdit, onRemove }: ItemCar
 					<Ionicons name="checkmark" size={22} color={status === "found" ? "#ffffff" : colors.success} />
 				</TouchableOpacity>
 
-			</View>
+			</View>}
 
 		</LinearGradient>
 	);

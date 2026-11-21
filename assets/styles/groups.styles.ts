@@ -322,6 +322,97 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			justifyContent: "center",
 			alignItems: "center",
 		},
+		/* ------------------------------ complete list ------------------------------ */
+		completeListButton: {
+			flexDirection: "row",
+			alignItems: "center",
+			justifyContent: "center",
+			gap: 8,
+			marginHorizontal: 24,
+			marginTop: 8,
+			marginBottom: 12,
+			paddingVertical: 14,
+			borderRadius: 16,
+			backgroundColor: colors.primary,
+			shadowColor: colors.shadow,
+			shadowOffset: { width: 0, height: 4 },
+			shadowOpacity: 0.15,
+			shadowRadius: 8,
+			elevation: 4,
+		},
+		completeListButtonBusy: {
+			opacity: 0.7,
+		},
+		completeListButtonText: {
+			fontSize: 16,
+			fontWeight: "700",
+			color: "#ffffff",
+		},
+		/* ------------------------- replacement suggestions (US 22) ------------------------- */
+		listItemReplaced: {
+			opacity: 0.5,
+		},
+		listItemReplacedText: {
+			textDecorationLine: "line-through",
+		},
+		suggestionsSection: {
+			marginTop: -2,
+			marginBottom: 8,
+			paddingLeft: 4,
+		},
+		suggestionsTitle: {
+			fontSize: 13,
+			fontWeight: "700",
+			marginBottom: 8,
+			color: colors.textMuted,
+		},
+		suggestionsRow: {
+			gap: 10,
+			paddingRight: 8,
+		},
+		suggestionCard: {
+			width: 124,
+			padding: 10,
+			borderRadius: 16,
+			borderWidth: 1,
+			borderColor: colors.border,
+			backgroundColor: colors.surface,
+		},
+		suggestionImage: {
+			width: "100%",
+			height: 72,
+			borderRadius: 10,
+			overflow: "hidden",
+			marginBottom: 6,
+			backgroundColor: colors.backgrounds.input,
+		},
+		suggestionName: {
+			fontSize: 13,
+			fontWeight: "600",
+			color: colors.text,
+		},
+		suggestionMeta: {
+			fontSize: 12,
+			fontWeight: "500",
+			marginTop: 2,
+			color: colors.textMuted,
+		},
+		suggestionManualCard: {
+			justifyContent: "center",
+			alignItems: "center",
+			gap: 8,
+			borderStyle: "dashed",
+			borderColor: colors.primary,
+		},
+		suggestionManualText: {
+			fontSize: 14,
+			fontWeight: "700",
+			textAlign: "center",
+			color: colors.primary,
+		},
+		suggestionEmptyCard: {
+			justifyContent: "center",
+		},
 		// US 16: the line under the title of the "suggest a replacement" dialog
 		replacementHint: {
 			fontSize: 14,
@@ -675,6 +766,14 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			fontSize: 13,
 			fontWeight: "600",
 			color: colors.textMuted,
+		},
+		// US 23: the line under a suggested product ("Usually every 7 days, last bought 9 days ago")
+		itemNote: {
+			fontSize: 13,
+			fontWeight: "600",
+			lineHeight: 18,
+			marginTop: 6,
+			color: colors.primary,
 		},
 		quantityRow: {
 			flexDirection: "row",

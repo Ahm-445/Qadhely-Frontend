@@ -10,9 +10,9 @@ import DeleteGroupDialog from "../../components/DeleteGroupDialog";
 import GroupCard from "../../components/GroupCard";
 import HomeHeader from "../../components/HomeHeader";
 import { groupEntryHref } from "../../hooks/useGroup";
+import type { Group } from "../../hooks/useGroups";
 import useGroups from "../../hooks/useGroups";
 import { useTheme } from "../../hooks/useTheme";
-import type { Group } from "../../hooks/useGroups";
 
 // US 05 — Home page: "New list" button (AC-01) and the
 // "Created Groups" / "Shared Groups" categories (AC-03, SF-20).
@@ -96,7 +96,7 @@ const handleShareInvite = async (group: Group) => {
 							end={{ x: 1, y: 1 }}
 						>
 							<Ionicons name="add-circle-outline" size={24} color="#ffffff" />
-							<Text style={groupsStyles.newListText}>New list</Text>
+							<Text style={groupsStyles.newListText}>New List Group</Text>
 						</LinearGradient>
 					</TouchableOpacity>
 				</View>
