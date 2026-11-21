@@ -14,6 +14,7 @@ import { isGroupManager, useGroup } from "../../../../hooks/useGroup";
 // The tab holds the two steps of adding an item: the search, and then the picked item's form.
 // The search stays mounted (hidden) behind the form, so backing out or adding an item returns to
 // the same results.
+// Telegram add items: while the search is empty, a shortcut opens the Qadhely bot instead.
 
 function AddItemsTab() {
 
@@ -27,7 +28,7 @@ function AddItemsTab() {
 		<>
 
 			<View style={{ flex: 1, display: pickedItemId === null ? "flex" : "none" }}>
-				<AddItemSearch onPickItem={setPickedItemId} />
+				<AddItemSearch onPickItem={setPickedItemId} showTelegramShortcut />
 			</View>
 
 			{pickedItemId !== null && (

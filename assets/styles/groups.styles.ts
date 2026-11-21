@@ -909,6 +909,34 @@ export const createGroupsStyles = (colors: ColorScheme) => {
 			paddingHorizontal: 24,
 			paddingTop: 16,
 		},
+
+		/* ------------------------ Telegram shortcut (Add items tab) ------------------------ */
+		telegramSection: {
+			paddingHorizontal: 24,
+			paddingTop: 20,
+		},
+		telegramCard: {
+			flexDirection: "row",
+			alignItems: "center",
+			gap: 4,
+			padding: 16,
+			borderRadius: 20,
+			borderWidth: 1,
+			borderColor: colors.border,
+		},
+		telegramText: {
+			fontSize: 14,
+			fontWeight: "500",
+			lineHeight: 20,
+			marginTop: 4,
+			color: colors.textMuted,
+		},
+		telegramHint: {
+			fontSize: 13,
+			fontWeight: "500",
+			marginTop: 6,
+			color: colors.primary,
+		},
 		resultsList: {
 			flex: 1,
 			marginTop: 12,

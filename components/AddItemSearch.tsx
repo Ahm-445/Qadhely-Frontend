@@ -18,6 +18,7 @@ import { useTheme } from "../hooks/useTheme";
 import { CATALOG_PAGE_SIZE, searchCatalog, type CatalogItem } from "../services/catalog";
 import BackButton from "./BackButton";
 import CatalogItemCard from "./CatalogItemCard";
+import TelegramShortcut from "./TelegramShortcut";
 
 
 // US 12 — the "Add items" tab, shown to the Group Creator and admins only.
@@ -40,10 +41,12 @@ interface AddItemSearchProps {
 	title?: string
 	/** US 22: what Back does when the search is shown on top of the list. */
 	onBack?: () => void
+	/** Telegram add items: offer the Telegram bot while the search bar is empty. */
+	showTelegramShortcut?: boolean
 }
 
 
-function AddItemSearch({ onPickItem, initialQuery = "", title, onBack }: AddItemSearchProps) {
+function AddItemSearch({ onPickItem, initialQuery = "", title, onBack, showTelegramShortcut = false }: AddItemSearchProps) {
 
 	const { colors } = useTheme();
 	const groupsStyles = createGroupsStyles(colors);
@@ -272,6 +275,12 @@ function AddItemSearch({ onPickItem, initialQuery = "", title, onBack }: AddItem
 					<Text style={[groupsStyles.sectionEmpty, groupsStyles.searchMessage]}>
 						Type a name or brand to find items to add to the list.
 					</Text>
+				)}
+
+				{showHint && showTelegramShortcut && (
+					<View style={groupsStyles.telegramSection}>
+						<TelegramShortcut groupName={name} />
+					</View>
 				)}
 
 				{!showHint && searching && (
