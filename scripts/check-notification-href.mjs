@@ -32,7 +32,7 @@ for (const extension of [".ts", ".tsx"]) {
 	};
 }
 
-const { notificationHref, ITEMS_ADDED_NOTIFICATION } = require(resolve(root, "utils/notificationHref.ts"));
+const { notificationHref, ITEMS_ADDED_NOTIFICATION, LIST_COMPLETED_NOTIFICATION } = require(resolve(root, "utils/notificationHref.ts"));
 const { groupEntryHref } = require(resolve(root, "hooks/useGroup.tsx"));
 
 
@@ -151,4 +151,70 @@ test("the helper never throws on hostile input", () => {
 	const hostile = [Symbol.iterator, () => {}, new Date(), /x/, Object.create(null), { get type() { return "items_added"; }, groupId: GROUP_ID }];
 
 	for (const data of hostile) assert.doesNotThrow(() => notificationHref(data));
+});
+
+
+// US 21 — "list completed" opens the group exactly like "items added"
+
+// exactly what the backend sends to the creator of a 5-person group (see tests/us21 in the backend)
+const completedPayload = { ...backendPayload, type: "list_completed", myRole: "creator", memberCount: 5 };
+
+test("the list-completed type matches the one the backend sends", () => {
+	assert.equal(LIST_COMPLETED_NOTIFICATION, "list_completed");
+});
+
+test("a list-completed notification opens the group's list, with the group, role and member count", () => {
+	assert.deepEqual(notificationHref(completedPayload), {
+		pathname: "/group/list",
+		params: { id: GROUP_ID, name: "Family groceries", myRole: "creator", memberCount: "5" },
+	});
+});
+
+test("it is the same route the Home screen uses to open a group", () => {
+	assert.deepEqual(
+		notificationHref(completedPayload),
+		groupEntryHref({ id: GROUP_ID, name: "Family groceries", myRole: "creator", memberCount: "5" })
+	);
+});
+
+test("both notification types open the same screen for the same group", () => {
+	assert.deepEqual(notificationHref({ ...completedPayload, type: "items_added" }), notificationHref(completedPayload));
+});
+
+test("items-added navigation is unchanged", () => {
+	assert.deepEqual(notificationHref(backendPayload), {
+		pathname: "/group/list",
+		params: { id: GROUP_ID, name: "Family groceries", myRole: "admin", memberCount: "4" },
+	});
+});
+
+for (const role of ["creator", "admin"]) {
+	test(`list completed: the recipient's own role is kept (${role})`, () => {
+		assert.equal(notificationHref({ ...completedPayload, myRole: role }).params.myRole, role);
+	});
+}
+
+for (const role of [undefined, null, "", "owner", "ADMIN", 7]) {
+	test(`list completed: an unknown role (${JSON.stringify(role) ?? "missing"}) opens the group as a regular member`, () => {
+		assert.equal(notificationHref({ ...completedPayload, myRole: role }).params.myRole, "member");
+	});
+}
+
+for (const groupId of [undefined, null, "", 123, "short", "665f1c2a9b1e8a001234567", "zzzzzzzzzzzzzzzzzzzzzzzz", "../Home", "665f1c2a9b1e8a0012345678/../x"]) {
+	test(`list completed: malformed group id ${JSON.stringify(groupId) ?? "missing"} is ignored`, () => {
+		assert.equal(notificationHref({ ...completedPayload, groupId }), null);
+	});
+}
+
+for (const type of ["list_complete", "LIST_COMPLETED", "list-completed", "completed", " list_completed", "item_removed", 5, null]) {
+	test(`other notification types are still ignored: ${JSON.stringify(type)}`, () => {
+		assert.equal(notificationHref({ ...completedPayload, type }), null);
+	});
+}
+
+test("list completed: a missing name and an unusable member count fall back to defaults", () => {
+	const { params } = notificationHref({ ...completedPayload, groupName: undefined, memberCount: "many" });
+
+	assert.equal(params.name, "Shopping list");
+	assert.equal(params.memberCount, "0");
 });
